@@ -9,7 +9,10 @@ namespace VectorGraphicsEditor
 {
     public static class GlobalVars
     {
-        public static List<Figure> figures = new List<Figure>();
+        public static readonly System.Windows.Media.Pen BlackPen = new System.Windows.Media.Pen(Brushes.Black, 1.0);
+        public static readonly System.Windows.Media.Pen TransparentPen = new System.Windows.Media.Pen(Brushes.Transparent, 1.0);
+
+        public static List<Figure> Figures = new List<Figure>();
         public static System.Windows.Media.Pen pen = new System.Windows.Media.Pen(Brushes.Black, 1.0);
         public static Brush brush = new SolidColorBrush(Colors.Transparent);
 
@@ -20,7 +23,10 @@ namespace VectorGraphicsEditor
 
         public static void Zooming(double delta)
         {
-            foreach (var figure in figures)
+            if (delta + scaleZoom <= 0.0)
+                delta = 0.0;
+
+            foreach (var figure in Figures)
             {
                 for (int j = 0; j < figure.points.Count; j++)
                 {
@@ -36,7 +42,7 @@ namespace VectorGraphicsEditor
 
         public static void Shearing(Vector delta)
         {
-            foreach (var figure in figures)
+            foreach (var figure in Figures)
                 for (int j = 0; j < figure.points.Count; j++)
                     figure.points[j] = Point.Add(figure.points[j], delta);
             offsetPos += delta;

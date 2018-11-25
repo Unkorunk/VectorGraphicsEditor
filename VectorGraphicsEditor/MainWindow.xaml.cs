@@ -49,7 +49,7 @@ namespace VectorGraphicsEditor
 
             Canvas.Children.Add(planeHost);
 
-            GlobalVars.sizeCanvas = new Size(792, 361);
+            GlobalVars.sizeCanvas = new Size(792, 499);
         }
 
         private void Canvas_MouseMove(object sender, MouseEventArgs e)
@@ -95,7 +95,9 @@ namespace VectorGraphicsEditor
 
         private void ButtonChangeTool(object sender, RoutedEventArgs e)
         {
+            toolNow.Disable();
             toolNow = transform[(sender as Button).Content.ToString()];
+            toolNow.Enable();
         }
 
 #if DEBUG
@@ -122,7 +124,7 @@ namespace VectorGraphicsEditor
             planeHost.Update();
 
 #if DEBUG
-            if (GlobalVars.figures.Count > 0)
+            if (GlobalVars.Figures.Count > 0)
                 debugWindow.AppendText(string.Format(pattern, oldZoom, GlobalVars.scaleZoom, deltaZoom));
 #endif
         }
@@ -168,7 +170,19 @@ namespace VectorGraphicsEditor
 
         private void ButtonClear_Click(object sender, RoutedEventArgs e)
         {
-            GlobalVars.figures.Clear();
+            GlobalVars.Figures.Clear();
+            planeHost.Update();
+        }
+
+        private void Canvas_OnMouseLeave(object sender, MouseEventArgs e)
+        {
+            toolNow.MouseLeave();
+            planeHost.Update();
+        }
+
+        private void Canvas_OnMouseEnter(object sender, MouseEventArgs e)
+        {
+            toolNow.MouseEnter();
             planeHost.Update();
         }
     }

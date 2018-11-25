@@ -15,7 +15,8 @@
         </Grid.RowDefinitions>
 
         <Canvas Grid.Row="1" x:Name="Canvas" HorizontalAlignment="Stretch" Background="Transparent"
-                VerticalAlignment="Stretch" MouseMove="Canvas_MouseMove"
+                VerticalAlignment="Stretch" MouseMove="Canvas_MouseMove" MouseLeave="Canvas_OnMouseLeave"
+                MouseEnter="Canvas_OnMouseEnter"
                 MouseDown="Canvas_MouseDown" MouseUp="Canvas_MouseUp" MouseWheel="Canvas_MouseWheel"/>
 
         <Grid Grid.Row="0" Background="WhiteSmoke">

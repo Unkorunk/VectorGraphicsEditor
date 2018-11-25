@@ -4,6 +4,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using System.Windows;
+using System.Windows.Input;
 using VectorGraphicsEditor.Figures;
 
 namespace VectorGraphicsEditor.Tools
@@ -14,13 +15,13 @@ namespace VectorGraphicsEditor.Tools
         {
             base.MouseDown(mousePosition);
 
-            GlobalVars.figures.Add(new Pen(GlobalVars.pen.Clone()));
+            GlobalVars.Figures.Add(new Pen(GlobalVars.pen.Clone()));
         }
 
         public override void MouseMove(Point mousePosition)
         {
             if (isDown)
-                GlobalVars.figures.Last().points.Add(mousePosition);
+                GlobalVars.Figures.Last().points.Add(mousePosition);
         }
     }
 }

@@ -14,15 +14,15 @@ namespace VectorGraphicsEditor.Tools
         {
             base.MouseDown(mousePosition);
 
-            GlobalVars.figures.Add(new RoundRect(GlobalVars.pen.Clone(), GlobalVars.brush.Clone()));
-            GlobalVars.figures.Last().points.Add(mousePosition);
-            GlobalVars.figures.Last().points.Add(mousePosition);
+            GlobalVars.Figures.Add(new RoundRect(GlobalVars.pen.Clone(), GlobalVars.brush.Clone()));
+            GlobalVars.Figures.Last().points.Add(mousePosition);
+            GlobalVars.Figures.Last().points.Add(mousePosition);
         }
 
         public override void MouseMove(Point mousePosition)
         {
             if (isDown)
-                GlobalVars.figures.Last().points[0] = mousePosition;
+                GlobalVars.Figures.Last().points[0] = mousePosition;
         }
     }
 }

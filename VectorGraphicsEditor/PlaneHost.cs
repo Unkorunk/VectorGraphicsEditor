@@ -29,7 +29,7 @@ namespace VectorGraphicsEditor
             DrawingVisual drawingVisual = new DrawingVisual();
             DrawingContext drawingContext = drawingVisual.RenderOpen();
 
-            foreach (var figure in GlobalVars.figures)
+            foreach (var figure in GlobalVars.Figures)
                 figure.Draw(drawingContext);
 
             drawingContext.Close();

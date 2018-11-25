@@ -22,7 +22,7 @@ namespace VectorGraphicsEditor.Figures
             {
                 var firstPoint = new Point(_patternList[con_ind[i]].X * size.X + points[1].X, _patternList[con_ind[i]].Y * size.Y + points[1].Y);
                 var secondPoint = new Point(_patternList[con_ind[i + 1]].X * size.X + points[1].X, _patternList[con_ind[i + 1]].Y * size.Y + points[1].Y);
-                drawingContext.DrawLine(GlobalVars.pen, firstPoint, secondPoint);
+                drawingContext.DrawLine(this.pen, firstPoint, secondPoint);
             }
         }
     }

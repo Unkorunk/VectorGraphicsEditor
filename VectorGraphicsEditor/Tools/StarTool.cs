@@ -14,20 +14,20 @@ namespace VectorGraphicsEditor.Tools
         {
             base.MouseDown(mousePosition);
 
-            GlobalVars.figures.Add(new Star(GlobalVars.pen.Clone()));
-            GlobalVars.figures.Last().points.Add(mousePosition);
-            GlobalVars.figures.Last().points.Add(mousePosition);
+            GlobalVars.Figures.Add(new Star(GlobalVars.pen.Clone()));
+            GlobalVars.Figures.Last().points.Add(mousePosition);
+            GlobalVars.Figures.Last().points.Add(mousePosition);
 
             double angle = -33.0;
             int count = 5;
             for (int i = 0; i < count; i++)
-                (GlobalVars.figures.Last() as Star)._patternList.Add(new Point(Math.Cos(angle + 2 * Math.PI * i / count), Math.Sin(angle + 2 * Math.PI * i / count)));
+                (GlobalVars.Figures.Last() as Star)._patternList.Add(new Point(Math.Cos(angle + 2 * Math.PI * i / count), Math.Sin(angle + 2 * Math.PI * i / count)));
         }
 
         public override void MouseMove(Point mousePosition)
         {
             if (isDown)
-                GlobalVars.figures.Last().points[0] = mousePosition;
+                GlobalVars.Figures.Last().points[0] = mousePosition;
         }
     }
 }
