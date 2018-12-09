@@ -8,6 +8,7 @@
                 
              d:DesignHeight="32" d:DesignWidth="32">
     <Grid>
+        <Rectangle Fill="Transparent"></Rectangle>
         <Rectangle Stroke="Black"></Rectangle>
         <Rectangle Name="Rectangle" Fill="Black" Margin="4px"></Rectangle> 
     </Grid>

@@ -1,69 +1,83 @@
-﻿using System.Windows;
+﻿using System;
+using System.Windows;
 using System.Windows.Media;
 using VectorGraphicsEditor.Figures;
+using VectorGraphicsEditor.Helpers;
 
 namespace VectorGraphicsEditor.Tools
 {
     class Loupe : Tool
     {
-        private Rectangle rect;
-        private double ratio, widthRect, heightRect;
-
-        public Loupe()
-        {
-            rect = new Rectangle(GlobalVars.BlackPen, Brushes.Transparent);
-            rect.points.Add(new Point());
-            rect.points.Add(new Point());
-        }
-
-        private void RecalRatio(Point mousePosition)
-        {
-            ratio = GlobalVars.sizeCanvas.Height / GlobalVars.sizeCanvas.Width;
-            widthRect = 200;
-            heightRect = widthRect * ratio;
-
-            rect.points[0] = new Point(mousePosition.X - widthRect / 2, mousePosition.Y - heightRect / 2);
-            rect.points[1] = new Point(mousePosition.X + widthRect / 2, mousePosition.Y + heightRect / 2);
-        }
+        private Figure saveFigure = null;
 
         public override void MouseDown(Point mousePosition)
         {
-            GlobalVars.Shearing(Point.Subtract(new Point(), mousePosition));
-            GlobalVars.Zooming(GlobalVars.sizeCanvas.Width / widthRect);
-            GlobalVars.Shearing(new Vector(GlobalVars.sizeCanvas.Width / 2.0, GlobalVars.sizeCanvas.Height / 2.0));
+            base.MouseDown(mousePosition);
 
-            RecalRatio(mousePosition);
+            GlobalVars.Figures.Add(new Rectangle(GlobalVars.Pen.Clone(), Brushes.Transparent));
+            GlobalVars.Figures[GlobalVars.Figures.Count - 1].AddPoint(mousePosition);
+            GlobalVars.Figures[GlobalVars.Figures.Count - 1].AddPoint(mousePosition);
         }
 
-        public override void Enable()
+        public override void MouseUp(Point mousePosition)
         {
-            base.Enable();
-            GlobalVars.Figures.Add(rect);
-        }
+            base.MouseUp(mousePosition);
 
-        public override void Disable()
-        {
-            base.Disable();
-            GlobalVars.Figures.Remove(rect);
+            var point0 = GlobalVars.Figures[GlobalVars.Figures.Count - 1].GetPoint(0);
+            var point1 = GlobalVars.Figures[GlobalVars.Figures.Count - 1].GetPoint(1);
+
+            var size = point1 - point0;
+            size.X = Math.Abs(size.X);
+            size.Y = Math.Abs(size.Y);
+
+            var ratioCanvas = GlobalVars.SizeCanvas.Width / GlobalVars.SizeCanvas.Height;
+            var ratioRect = size.X / size.Y;
+
+            if (ratioCanvas > ratioRect)
+            {
+                size.Y = size.X / ratioCanvas;
+            }
+            else
+            {
+                size.X = size.Y * ratioCanvas;
+            }
+
+            GlobalVars.Figures.RemoveAt(GlobalVars.Figures.Count - 1);
+
+            if (size.X < double.Epsilon || size.Y < double.Epsilon)
+                return;
+            if (GlobalVars.SizeCanvas.Height / size.Y > 500.0)
+                return;
+
+            Transformations.OffsetPos = -new Vector(Math.Min(point1.X, point0.X), Math.Min(point1.Y, point0.Y));
+            Transformations.ScaleZoom = GlobalVars.SizeCanvas.Height / size.Y;
         }
 
         public override void MouseLeave()
         {
-            base.MouseLeave();
-            rect.pen = GlobalVars.TransparentPen;
+            if (isDown)
+            {
+                saveFigure = GlobalVars.Figures[GlobalVars.Figures.Count - 1];
+                GlobalVars.Figures.RemoveAt(GlobalVars.Figures.Count - 1);
+            }
         }
 
         public override void MouseEnter()
         {
             base.MouseEnter();
-            rect.pen = GlobalVars.BlackPen;
+
+            if (isDown && saveFigure != null)
+                GlobalVars.Figures.Add(saveFigure);
         }
 
         public override void MouseMove(Point mousePosition)
         {
             base.MouseMove(mousePosition);
 
-            RecalRatio(mousePosition);
+            if (isDown)
+            {
+                GlobalVars.Figures[GlobalVars.Figures.Count - 1].SetPoint(0, mousePosition);
+            }
         }
     }
 }

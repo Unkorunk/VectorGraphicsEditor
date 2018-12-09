@@ -1,10 +1,6 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using System.Windows;
+﻿using System.Windows;
 using System.Windows.Input;
+using VectorGraphicsEditor.Helpers;
 
 namespace VectorGraphicsEditor.Tools
 {
@@ -22,12 +18,7 @@ namespace VectorGraphicsEditor.Tools
         {
             if (isDown)
             {
-                if (_enabled)
-                {
-                    Mouse.SetCursor(Cursors.Hand);
-                }
-
-                GlobalVars.Shearing(Point.Subtract(mousePosition, _prevMousePoint));
+                Transformations.OffsetPos += Vector.Divide(Point.Subtract(mousePosition, _prevMousePoint), Transformations.ScaleZoom);
                 _prevMousePoint = mousePosition;
             }
         }

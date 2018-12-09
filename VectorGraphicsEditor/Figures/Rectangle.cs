@@ -1,23 +1,21 @@
-﻿using System.Collections.Generic;
-using System.Windows;
+﻿using System.Windows;
 using System.Windows.Media;
+using VectorGraphicsEditor.Helpers;
 
 namespace VectorGraphicsEditor.Figures
 {
     class Rectangle : Figure
     {
-        public Rectangle(System.Windows.Media.Pen pen, Brush brush)
-        {
-            points = new List<Point>();
-            this.pen = pen;
-            this.brush = brush;
-        }
+        public Rectangle(System.Windows.Media.Pen pen, Brush brush) : base(pen, brush) { }
 
         public override void Draw(DrawingContext drawingContext)
         {
-            var size = Point.Subtract(points[0], points[1]);
+            var point1 = Transformations.GoToGlobal(points[0]);
+            var point2 = Transformations.GoToGlobal(points[1]);
 
-            drawingContext.DrawRectangle(this.brush, this.pen, new Rect(points[1], size));
+            var size = Point.Subtract(point1, point2);
+
+            drawingContext.DrawRectangle(this.brush, this.pen, new Rect(Transformations.GoToGlobal(points[1]), size));
         }
     }
 }

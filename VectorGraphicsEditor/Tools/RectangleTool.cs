@@ -1,10 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using System.Windows;
-using System.Windows.Input;
+﻿using System.Windows;
 using VectorGraphicsEditor.Figures;
 
 namespace VectorGraphicsEditor.Tools
@@ -15,15 +9,15 @@ namespace VectorGraphicsEditor.Tools
         {
             base.MouseDown(mousePosition);
 
-            GlobalVars.Figures.Add(new Rectangle(GlobalVars.pen.Clone(), GlobalVars.brush.Clone()));
-            GlobalVars.Figures.Last().points.Add(mousePosition);
-            GlobalVars.Figures.Last().points.Add(mousePosition);
+            GlobalVars.Figures.Add(new Rectangle(GlobalVars.Pen.Clone(), GlobalVars.Brush.Clone()));
+            GlobalVars.Figures[GlobalVars.Figures.Count - 1].AddPoint(mousePosition);
+            GlobalVars.Figures[GlobalVars.Figures.Count - 1].AddPoint(mousePosition);
         }
 
         public override void MouseMove(Point mousePosition)
         {
             if (isDown)
-                GlobalVars.Figures.Last().points[0] = mousePosition;
+                GlobalVars.Figures[GlobalVars.Figures.Count - 1].SetPoint(0, mousePosition);
         }
     }
 }

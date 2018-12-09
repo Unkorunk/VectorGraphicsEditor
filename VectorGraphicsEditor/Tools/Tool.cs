@@ -1,24 +1,13 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Security.Cryptography.X509Certificates;
-using System.Text;
-using System.Threading.Tasks;
-using System.Windows;
+﻿using System.Windows;
 using System.Windows.Input;
 
 namespace VectorGraphicsEditor
 {
-    class Tool
+    public class Tool
     {
         protected bool isDown = false;
-        protected bool _enabled = false;
 
-        public bool IsEnabled
-        {
-            set => _enabled = value;
-            get => _enabled;
-        }
+        public bool IsDown => isDown;
 
         public Tool()
         {
@@ -36,16 +25,6 @@ namespace VectorGraphicsEditor
                 isDown = false;
         }
 
-        public virtual void Enable()
-        {
-            _enabled = true;
-        }
-
-        public virtual void Disable()
-        {
-            _enabled = false;
-        }
-
         public virtual void MouseDown(Point mousePosition)
         {
             isDown = true;
@@ -58,7 +37,7 @@ namespace VectorGraphicsEditor
 
         public virtual void MouseMove(Point mousePosition)
         {
-
+            
         }
     }
 }

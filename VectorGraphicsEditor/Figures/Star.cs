@@ -1,6 +1,7 @@
 ﻿using System.Collections.Generic;
 using System.Windows;
 using System.Windows.Media;
+using VectorGraphicsEditor.Helpers;
 
 namespace VectorGraphicsEditor.Figures
 {
@@ -8,22 +9,30 @@ namespace VectorGraphicsEditor.Figures
     {
         public List<Point> _patternList = new List<Point>();
 
-        public Star(System.Windows.Media.Pen pen)
-        {
-            points = new List<Point>();
-            this.pen = pen;
-        }
+        public Star(System.Windows.Media.Pen pen, Brush brush) : base(pen, brush) { }
 
         public override void Draw(DrawingContext drawingContext)
         {
-            var size = Vector.Divide(Point.Subtract(points[0], points[1]), 2.0);
-            int[] con_ind = { 0, 2, 4, 1, 3, 0 };
-            for (int i = 0; i < con_ind.Length - 1; i++)
+            var point1 = Transformations.GoToGlobal(points[0]);
+            var point2 = Transformations.GoToGlobal(points[1]);
+
+            var size = Vector.Divide(Point.Subtract(point1, point2), 2.0);
+
+            int[] con_ind = { 0, 3, 2, 5, 4, 7, 6, 9, 8, 1 };
+
+            PathFigure pathFigure = new PathFigure(new Point(_patternList[con_ind[0]].X * size.X + point2.X,
+                _patternList[con_ind[0]].Y * size.Y + point2.Y), new List<PathSegment>(), true );
+            
+            for (int i = 1; i < con_ind.Length; i++)
             {
-                var firstPoint = new Point(_patternList[con_ind[i]].X * size.X + points[1].X, _patternList[con_ind[i]].Y * size.Y + points[1].Y);
-                var secondPoint = new Point(_patternList[con_ind[i + 1]].X * size.X + points[1].X, _patternList[con_ind[i + 1]].Y * size.Y + points[1].Y);
-                drawingContext.DrawLine(this.pen, firstPoint, secondPoint);
+                var firstPoint = new Point(_patternList[con_ind[i]].X * size.X + point2.X, _patternList[con_ind[i]].Y * size.Y + point2.Y);
+                pathFigure.Segments.Add(new LineSegment(firstPoint, true));
             }
+
+            var myGeometry = new PathGeometry();
+            myGeometry.Figures.Add(pathFigure);
+
+            drawingContext.DrawGeometry(this.brush, this.pen, myGeometry);
         }
     }
 }

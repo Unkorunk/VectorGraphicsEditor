@@ -37,6 +37,8 @@
   <ItemGroup>
     <Reference Include="System" />
     <Reference Include="System.Data" />
+    <Reference Include="System.Drawing" />
+    <Reference Include="System.Windows.Forms" />
     <Reference Include="System.Xml" />
     <Reference Include="Microsoft.CSharp" />
     <Reference Include="System.Core" />
@@ -66,6 +68,7 @@
     <Compile Include="GUI\Color.xaml.cs">
       <DependentUpon>Color.xaml</DependentUpon>
     </Compile>
+    <Compile Include="Helpers\Transformations.cs" />
     <Compile Include="PlaneHost.cs" />
     <Compile Include="Tools\EllipseTool.cs" />
     <Compile Include="Tools\Hand.cs" />
@@ -76,9 +79,6 @@
     <Compile Include="Tools\RoundRectTool.cs" />
     <Compile Include="Tools\StarTool.cs" />
     <Compile Include="Tools\Tool.cs" />
-    <Compile Include="Windows\Window1.xaml.cs">
-      <DependentUpon>Window1.xaml</DependentUpon>
-    </Compile>
     <Page Include="GUI\Color.xaml">
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
@@ -95,10 +95,6 @@
       <DependentUpon>MainWindow.xaml</DependentUpon>
       <SubType>Code</SubType>
     </Compile>
-    <Page Include="Windows\Window1.xaml">
-      <Generator>MSBuild:Compile</Generator>
-      <SubType>Designer</SubType>
-    </Page>
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Properties\AssemblyInfo.cs">
@@ -125,6 +121,18 @@
   </ItemGroup>
   <ItemGroup>
     <None Include="App.config" />
+  </ItemGroup>
+  <ItemGroup>
+    <Resource Include="Resources\hand.png" />
+    <Resource Include="Resources\line.png" />
+    <Resource Include="Resources\loupe.png" />
+    <Resource Include="Resources\pen.png" />
+    <Resource Include="Resources\rectangle.png" />
+    <Resource Include="Resources\roundrect.png" />
+    <Resource Include="Resources\star.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <Resource Include="Resources\ellipse.png" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
 </Project>

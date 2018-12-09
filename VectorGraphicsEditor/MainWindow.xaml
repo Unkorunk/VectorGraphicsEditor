@@ -5,49 +5,52 @@
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:local="clr-namespace:VectorGraphicsEditor"
         xmlns:local1="clr-namespace:VectorGraphicsEditor.GUI"
+        xmlns:system="clr-namespace:System;assembly=mscorlib"
         mc:Ignorable="d"
-        Title="VectorGraphicsEditor" Height="600" Width="800" MinHeight="200" MinWidth="500"
-        Closing="MainWindow_OnClosing">
+        Title="VectorGraphicsEditor" Height="600" Width="800" MinHeight="200" MinWidth="740">
+    <Window.Resources>
+        <Image x:Key="Pen" Source="Resources/pen.png"></Image>
+        <Image x:Key="Line" Source="Resources/line.png"></Image>
+        <Image x:Key="Ellipse" Source="Resources/ellipse.png"></Image>
+        <Image x:Key="Rectangle" Source="Resources/rectangle.png"></Image>
+        <Image x:Key="RoundRect" Source="Resources/roundrect.png"></Image>
+        <Image x:Key="Star" Source="Resources/star.png"></Image>
+        <Image x:Key="Loupe" Source="Resources/loupe.png"></Image>
+        <Image x:Key="Hand" Source="Resources/hand.png"></Image>
+    </Window.Resources>
+
     <Grid>
         <Grid.RowDefinitions>
             <RowDefinition Height="70px"></RowDefinition>
             <RowDefinition></RowDefinition>
         </Grid.RowDefinitions>
 
-        <Canvas Grid.Row="1" x:Name="Canvas" HorizontalAlignment="Stretch" Background="Transparent"
-                VerticalAlignment="Stretch" MouseMove="Canvas_MouseMove" MouseLeave="Canvas_OnMouseLeave"
-                MouseEnter="Canvas_OnMouseEnter"
-                MouseDown="Canvas_MouseDown" MouseUp="Canvas_MouseUp" MouseWheel="Canvas_MouseWheel"/>
+        <Grid Grid.Row="1">
+            <Label Name="LabelScaleZoom" Content="Label"/>
+
+            <Canvas x:Name="Canvas" HorizontalAlignment="Stretch" Background="Transparent" MouseLeave="Canvas_OnMouseLeave" MouseEnter="Canvas_OnMouseEnter"
+                   MouseUp="Canvas_MouseUp" MouseMove="Canvas_MouseMove"  VerticalAlignment="Stretch" MouseDown="Canvas_MouseDown" MouseWheel="Canvas_MouseWheel" Margin="0,0,17,17">
+            </Canvas>
+
+            <ScrollBar x:Name="ScrollBarX" Orientation="Horizontal" VerticalAlignment="Bottom" Margin="0,0,17,0" Scroll="ScrollBarX_Scroll" />
+            <ScrollBar x:Name="ScrollBarY" HorizontalAlignment="Right" Margin="0,0,0,17" Scroll="ScrollBarY_Scroll" />
+            <Rectangle HorizontalAlignment="Right" VerticalAlignment="Bottom" Fill="#F0F0F0" Width="17" Height="17"></Rectangle>
+        </Grid>
 
         <Grid Grid.Row="0" Background="WhiteSmoke">
-            <Grid.RowDefinitions>
-                <RowDefinition></RowDefinition>
-                <RowDefinition></RowDefinition>
-            </Grid.RowDefinitions>
             <Grid.ColumnDefinitions>
+                <ColumnDefinition ></ColumnDefinition>
                 <ColumnDefinition></ColumnDefinition>
-                <ColumnDefinition></ColumnDefinition>
-                <ColumnDefinition></ColumnDefinition>
-                <ColumnDefinition></ColumnDefinition>
-                <ColumnDefinition Width="3.5*"></ColumnDefinition>
             </Grid.ColumnDefinitions>
 
-            <Button Grid.Row="0" Grid.Column="0" Content="Pen" VerticalAlignment="Stretch" HorizontalAlignment="Stretch" Width="75" Height="20" Click="ButtonChangeTool" />
-            <Button Grid.Row="0" Grid.Column="1" Content="Line" VerticalAlignment="Stretch" HorizontalAlignment="Stretch" Width="75" Height="20" Click="ButtonChangeTool" />
-            <Button Grid.Row="0" Grid.Column="2" Content="Ellipse" VerticalAlignment="Stretch" HorizontalAlignment="Stretch" Width="75" Height="20" Click="ButtonChangeTool" />
-            <Button Grid.Row="1" Grid.Column="0" Content="Rectangle" VerticalAlignment="Stretch" HorizontalAlignment="Stretch" Width="75" Height="20" Click="ButtonChangeTool" />
-            <Button Grid.Row="1" Grid.Column="1" Content="RoundRect" VerticalAlignment="Stretch" HorizontalAlignment="Stretch"  Width="75" Height="20" Click="ButtonChangeTool" />
-            <Button Grid.Row="1" Grid.Column="2" Content="Star" VerticalAlignment="Stretch" HorizontalAlignment="Stretch" Width="75" Height="20" Click="ButtonChangeTool" />
-            <Button Grid.Row="0" Grid.Column="3" Content="Loupe" VerticalAlignment="Stretch" HorizontalAlignment="Stretch" Width="75" Height="20" Click="ButtonChangeTool"/>
-            <Button Grid.Row="1" Grid.Column="3" Content="Hand" VerticalAlignment="Stretch" HorizontalAlignment="Stretch" Width="75" Height="20" Click="ButtonChangeTool"/>
+            <WrapPanel Name="ButtonPanel" Height="Auto" Width="Auto" Orientation="Horizontal" VerticalAlignment="Bottom" HorizontalAlignment="Center">
 
-            <Grid Grid.Row="0" Grid.RowSpan="2" Grid.Column="4">
+            </WrapPanel>
+
+            <Grid Grid.Row="0" Grid.Column="1">
                 <Grid.ColumnDefinitions>
-                    <!-- First Color -->
                     <ColumnDefinition></ColumnDefinition>
-                    <!-- Second Color -->
                     <ColumnDefinition></ColumnDefinition>
-                    <!-- Palette -->
                     <ColumnDefinition Width="3*"></ColumnDefinition>
                 </Grid.ColumnDefinitions>
 
@@ -78,29 +81,11 @@
                         <RowDefinition></RowDefinition>
                     </Grid.RowDefinitions>
 
-                    <StackPanel Orientation="Horizontal" Grid.Row="0" VerticalAlignment="Bottom" HorizontalAlignment="Center">
-                        <local1:Color Fill="Black" Width="20" Height="20" MouseDown="SelectColor"></local1:Color>
-                        <local1:Color Fill="Gray" Width="20" Height="20" MouseDown="SelectColor"></local1:Color>
-                        <local1:Color Fill="Brown" Width="20" Height="20" MouseDown="SelectColor"></local1:Color>
-                        <local1:Color Fill="Red" Width="20" Height="20" MouseDown="SelectColor"></local1:Color>
-                        <local1:Color Fill="OrangeRed" Width="20" Height="20" MouseDown="SelectColor"></local1:Color>
-                        <local1:Color Fill="Yellow" Width="20" Height="20" MouseDown="SelectColor"></local1:Color>
-                        <local1:Color Fill="Green" Width="20" Height="20" MouseDown="SelectColor"></local1:Color>
-                        <local1:Color Fill="CornflowerBlue" Width="20" Height="20" MouseDown="SelectColor"></local1:Color>
-                        <local1:Color Fill="Blue" Width="20" Height="20" MouseDown="SelectColor"></local1:Color>
-                        <local1:Color Fill="DarkViolet" Width="20" Height="20" MouseDown="SelectColor"></local1:Color>
+                    <StackPanel Name="FirstColorPanel" Orientation="Horizontal" Grid.Row="0" VerticalAlignment="Bottom" HorizontalAlignment="Center">
+
                     </StackPanel>
-                    <StackPanel Orientation="Horizontal" Grid.Row="1" VerticalAlignment="Top" HorizontalAlignment="Center">
-                        <local1:Color Fill="White" Width="20" Height="20" MouseDown="SelectColor"></local1:Color>
-                        <local1:Color Fill="WhiteSmoke" Width="20" Height="20" MouseDown="SelectColor"></local1:Color>
-                        <local1:Color Fill="Brown" Width="20" Height="20" MouseDown="SelectColor"></local1:Color>
-                        <local1:Color Fill="Pink" Width="20" Height="20" MouseDown="SelectColor"></local1:Color>
-                        <local1:Color Fill="Orange" Width="20" Height="20" MouseDown="SelectColor"></local1:Color>
-                        <local1:Color Fill="SandyBrown" Width="20" Height="20" MouseDown="SelectColor"></local1:Color>
-                        <local1:Color Fill="LightGreen" Width="20" Height="20" MouseDown="SelectColor"></local1:Color>
-                        <local1:Color Fill="SkyBlue" Width="20" Height="20" MouseDown="SelectColor"></local1:Color>
-                        <local1:Color Fill="LightSteelBlue" Width="20" Height="20" MouseDown="SelectColor"></local1:Color>
-                        <local1:Color Fill="Violet" Width="20" Height="20" MouseDown="SelectColor"></local1:Color>
+                    <StackPanel Name="SecondColorPanel" Orientation="Horizontal" Grid.Row="1" VerticalAlignment="Top" HorizontalAlignment="Center">
+
                     </StackPanel>
 
                     <Button Grid.Row="2" Name="ButtonClear" Content="Clear" Click="ButtonClear_Click"></Button>

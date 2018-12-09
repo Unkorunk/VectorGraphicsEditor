@@ -1,12 +1,11 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.ComponentModel;
+using System.Linq;
 using System.Windows;
-using System.Windows.Controls;
 using System.Windows.Input;
 using System.Windows.Media;
+using System.Windows.Controls;
 using VectorGraphicsEditor.Tools;
-using VectorGraphicsEditor.Windows;
+using VectorGraphicsEditor.Helpers;
 using Color = VectorGraphicsEditor.GUI.Color;
 using PenTool = VectorGraphicsEditor.Tools.PenTool;
 
@@ -16,29 +15,69 @@ namespace VectorGraphicsEditor
     {
         private readonly PlaneHost planeHost;
 
-        private static readonly PenTool penTool = new PenTool();
-        private static readonly LineTool lineTool = new LineTool();
-        private static readonly EllipseTool ellipseTool = new EllipseTool();
-        private static readonly RectangleTool rectangleTool = new RectangleTool();
-        private static readonly RoundRectTool roundRectTool = new RoundRectTool();
-        private static readonly StarTool starTool = new StarTool();
-        private static readonly Loupe loupe = new Loupe();
-        private static readonly Hand hand = new Hand();
+        private static Tool[] tools =
+        {
+            new PenTool(),
+            new LineTool(),
+            new EllipseTool(),
+            new RectangleTool(),
+            new RoundRectTool(),
+            new StarTool(),
+            new Loupe(),
+            new Hand()
+        };
 
-        private Tool toolNow = penTool;
+        private Tool toolNow = tools[0];
+        private int toolPrev = 0;
 
-#if DEBUG
-        private Window1 debugWindow;
-#endif
+        private bool nowFirstColorSelect = true;
+
+        private void AddColorOnPanel(StackPanel panel, Brush brush)
+        {
+            var color = new Color { Fill = brush, Width = 20, Height = 20 };
+            color.MouseDown += SelectColor;
+            panel.Children.Add(color);
+        }
+
+        private void AddToolOnPanel(Panel panel, Tool tag, string name)
+        {
+            var button = new Button
+            {
+                Content = FindResource(name),
+                Tag = tag,
+                VerticalAlignment = VerticalAlignment.Stretch,
+                HorizontalAlignment = HorizontalAlignment.Stretch,
+                Width = 35,
+                Height = 35
+            };
+
+            button.Click += ButtonChangeTool;
+
+            panel.Children.Add(button);
+        }
 
         public MainWindow()
         {
             InitializeComponent();
 
-#if DEBUG
-            debugWindow = new Window1();
-            debugWindow.Show();
-#endif
+            Brush[] colors =
+            {
+                Brushes.Black, Brushes.Gray, Brushes.Brown, Brushes.Red, Brushes.OrangeRed, Brushes.Yellow, Brushes.Green,
+                Brushes.CornflowerBlue, Brushes.Blue, Brushes.DarkViolet, Brushes.White, Brushes.WhiteSmoke, Brushes.Brown,
+                Brushes.Pink, Brushes.Orange, Brushes.SandyBrown, Brushes.LightGreen, Brushes.SkyBlue, Brushes.LightSteelBlue,
+                Brushes.Violet
+            };
+
+            string[] namesBtn =
+            {
+                "Pen", "Line", "Ellipse", "Rectangle", "RoundRect", "Star", "Loupe", "Hand"
+            };
+
+            for (int i = 0; i < colors.Length; i++)
+                AddColorOnPanel(i < 10 ? FirstColorPanel : SecondColorPanel, colors[i]);
+
+            for (var i = 0; i < namesBtn.Length; i++)
+                AddToolOnPanel(ButtonPanel, tools[i], namesBtn[i]);
 
             planeHost = new PlaneHost
             {
@@ -49,12 +88,36 @@ namespace VectorGraphicsEditor
 
             Canvas.Children.Add(planeHost);
 
-            GlobalVars.sizeCanvas = new Size(792, 499);
+            GlobalVars.LabelScaleZoom = this.LabelScaleZoom;
+            GlobalVars.LabelScaleZoom.Content = Transformations.ScaleZoom;
+
+            GlobalVars.ScrollBarX = this.ScrollBarX;
+            GlobalVars.ScrollBarY = this.ScrollBarY;
+
+            Loaded += (sender, args) =>
+            {
+                GlobalVars.SizeCanvas = new Size(Canvas.ActualWidth, Canvas.ActualHeight);
+                ScrollBarX.Maximum = Canvas.ActualWidth / 100;
+                ScrollBarY.Maximum = Canvas.ActualHeight / 100;
+            };
+            SizeChanged += (sender, args) => { GlobalVars.SizeCanvas = new Size(Canvas.ActualWidth, Canvas.ActualHeight); };
         }
 
         private void Canvas_MouseMove(object sender, MouseEventArgs e)
         {
             var mousePosition = e.GetPosition(Canvas);
+
+            if (!(toolNow is Hand))
+                mousePosition = Transformations.GoToLocal(mousePosition);
+
+            if (!(toolNow is Hand) && !(toolNow is Loupe)/* && toolNow.IsDown*/)
+            {
+                ScrollBarX.Minimum = Math.Min(ScrollBarX.Minimum, mousePosition.X / 100);
+                ScrollBarX.Maximum = Math.Max(ScrollBarX.Maximum, mousePosition.X / 100);
+
+                ScrollBarY.Minimum = Math.Min(ScrollBarY.Minimum, mousePosition.Y / 100);
+                ScrollBarY.Maximum = Math.Max(ScrollBarY.Maximum, mousePosition.Y / 100);
+            }
 
             toolNow.MouseMove(mousePosition);
 
@@ -65,7 +128,25 @@ namespace VectorGraphicsEditor
         {
             var mousePosition = e.GetPosition(Canvas);
 
-            if (e.LeftButton == MouseButtonState.Pressed)
+            if (e.ChangedButton == MouseButton.Middle && e.ButtonState == MouseButtonState.Pressed)
+            {
+                for (int i = 0; i < tools.Length; i++)
+                {
+                    if (tools[i] == toolNow)
+                    {
+                        toolPrev = i;
+                        break;
+                    }
+                }
+
+                toolNow = tools[7];
+                toolNow.MouseDown(mousePosition);
+            }
+
+            if (!(toolNow is Hand))
+                mousePosition = Transformations.GoToLocal(mousePosition);
+
+            if (e.ChangedButton == MouseButton.Left && e.ButtonState == MouseButtonState.Pressed)
                 toolNow.MouseDown(mousePosition);
 
             planeHost.Update();
@@ -75,68 +156,35 @@ namespace VectorGraphicsEditor
         {
             var mousePosition = e.GetPosition(Canvas);
 
-            if (e.LeftButton == MouseButtonState.Released)
+            if (e.ChangedButton == MouseButton.Middle && e.ButtonState == MouseButtonState.Released)
+            {
                 toolNow.MouseUp(mousePosition);
+                toolNow = tools[toolPrev];
+            }
+
+            if (!(toolNow is Hand))
+                mousePosition = Transformations.GoToLocal(mousePosition);
+
+            if (e.ChangedButton == MouseButton.Left && e.ButtonState == MouseButtonState.Released)
+            {
+                toolNow.MouseUp(mousePosition);
+            }
 
             planeHost.Update();
         }
-
-        private readonly Dictionary<string, Tool> transform = new Dictionary<string, Tool>()
-        {
-            { "Pen", penTool },
-            { "Line", lineTool },
-            { "Ellipse", ellipseTool },
-            { "Rectangle", rectangleTool },
-            { "RoundRect", roundRectTool },
-            { "Star", starTool },
-            { "Loupe",  loupe },
-            { "Hand", hand }
-        };
 
         private void ButtonChangeTool(object sender, RoutedEventArgs e)
         {
-            toolNow.Disable();
-            toolNow = transform[(sender as Button).Content.ToString()];
-            toolNow.Enable();
+            toolNow = (Tool)((Button) sender).Tag;
         }
-
-#if DEBUG
-        private string formatList(List<Point> points)
-        {
-            string msg = string.Empty;
-
-            for (int i = 0; i < points.Count; i++)
-                msg += points[i].X + " " + points[i].Y + (i != points.Count - 1 ? Environment.NewLine : "");
-
-            return msg;
-        }
-#endif
 
         private void Canvas_MouseWheel(object sender, MouseWheelEventArgs e)
         {
-#if DEBUG
-            string pattern = "ZOOM:\r\n\tOld: {0}\r\n\tNew: {1}\r\n\tDelta: {2}";
-            double oldZoom = GlobalVars.scaleZoom;
-            double deltaZoom = e.Delta / 200.0;
-#endif
+            if (toolNow == tools[7] && toolNow.IsDown) return; // ???
 
-            GlobalVars.Zooming(e.Delta / 200.0);
+            Transformations.ScaleZoom += e.Delta / 200.0;
             planeHost.Update();
-
-#if DEBUG
-            if (GlobalVars.Figures.Count > 0)
-                debugWindow.AppendText(string.Format(pattern, oldZoom, GlobalVars.scaleZoom, deltaZoom));
-#endif
         }
-
-        private void MainWindow_OnClosing(object sender, CancelEventArgs e)
-        {
-#if DEBUG
-            debugWindow.Close();
-#endif
-        }
-
-        private bool nowFirstColorSelect = true;
 
         private void SelectColorFirst(object sender, MouseButtonEventArgs e)
         {
@@ -156,13 +204,13 @@ namespace VectorGraphicsEditor
         {
             if (nowFirstColorSelect)
             {
-                GlobalVars.pen = new Pen((sender as Color).Fill, 1.0);
-                FirstColor.Fill = (sender as Color).Fill;
+                GlobalVars.Pen = new Pen(((Color) sender).Fill, 1.0);
+                FirstColor.Fill = ((Color) sender).Fill;
             }
             else
             {
-                GlobalVars.brush = (sender as Color).Fill;
-                SecondColor.Fill = (sender as Color).Fill;
+                GlobalVars.Brush = ((Color) sender).Fill;
+                SecondColor.Fill = ((Color) sender).Fill;
             }
 
             planeHost.Update();
@@ -183,6 +231,18 @@ namespace VectorGraphicsEditor
         private void Canvas_OnMouseEnter(object sender, MouseEventArgs e)
         {
             toolNow.MouseEnter();
+            planeHost.Update();
+        }
+
+        private void ScrollBarX_Scroll(object sender, System.Windows.Controls.Primitives.ScrollEventArgs e)
+        {
+            Transformations.OffsetPos = new Vector(-ScrollBarX.Value * 100, Transformations.OffsetPos.Y);
+            planeHost.Update();
+        }
+
+        private void ScrollBarY_Scroll(object sender, System.Windows.Controls.Primitives.ScrollEventArgs e)
+        {
+            Transformations.OffsetPos = new Vector(Transformations.OffsetPos.X, -ScrollBarY.Value * 100);
             planeHost.Update();
         }
     }
