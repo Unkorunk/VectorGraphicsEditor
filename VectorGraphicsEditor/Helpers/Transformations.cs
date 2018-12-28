@@ -1,6 +1,5 @@
 ﻿using System;
 using System.Windows;
-using System.Windows.Media;
 
 namespace VectorGraphicsEditor.Helpers
 {
@@ -8,7 +7,6 @@ namespace VectorGraphicsEditor.Helpers
     {
         private static double scaleZoom = 1.0;
         private static Vector offsetPos = new Vector(0.0, 0.0);
-        private static Matrix ltg, gtl;
 
         public static Vector OffsetPos
         {

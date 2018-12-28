@@ -34,7 +34,7 @@ namespace VectorGraphicsEditor
 
         private void AddColorOnPanel(StackPanel panel, Brush brush)
         {
-            var color = new Color { Fill = brush, Width = 20, Height = 20 };
+            var color = new Button { Background = brush, Width = 20, Height = 20 };
             color.MouseDown += SelectColor;
             panel.Children.Add(color);
         }
@@ -68,13 +68,13 @@ namespace VectorGraphicsEditor
                 Brushes.Violet
             };
 
+            for (int i = 0; i < colors.Length; i++)
+                AddColorOnPanel(i < 10 ? FirstColorPanel : SecondColorPanel, colors[i]);
+
             string[] namesBtn =
             {
                 "Pen", "Line", "Ellipse", "Rectangle", "RoundRect", "Star", "Loupe", "Hand"
             };
-
-            for (int i = 0; i < colors.Length; i++)
-                AddColorOnPanel(i < 10 ? FirstColorPanel : SecondColorPanel, colors[i]);
 
             for (var i = 0; i < namesBtn.Length; i++)
                 AddToolOnPanel(ButtonPanel, tools[i], namesBtn[i]);
@@ -243,6 +243,13 @@ namespace VectorGraphicsEditor
         private void ScrollBarY_Scroll(object sender, System.Windows.Controls.Primitives.ScrollEventArgs e)
         {
             Transformations.OffsetPos = new Vector(Transformations.OffsetPos.X, -ScrollBarY.Value * 100);
+            planeHost.Update();
+        }
+
+        private void ButtonReset_Click(object sender, RoutedEventArgs e)
+        {
+            Transformations.ScaleZoom = 1.0;
+            Transformations.OffsetPos = new Vector(0, 0);
             planeHost.Update();
         }
     }

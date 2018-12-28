@@ -45,7 +45,16 @@ namespace VectorGraphicsEditor.Tools
             GlobalVars.Figures.RemoveAt(GlobalVars.Figures.Count - 1);
 
             if (size.X < double.Epsilon || size.Y < double.Epsilon)
+            {
+                size.X = 50;
+                size.Y = size.X / ratioCanvas;
+
+                Transformations.OffsetPos = -new Vector(Math.Min(point1.X, point0.X) - 25, Math.Min(point1.Y, point0.Y) - 25);
+                Transformations.ScaleZoom = GlobalVars.SizeCanvas.Height / size.Y;
+
                 return;
+            }
+
             if (GlobalVars.SizeCanvas.Height / size.Y > 500.0)
                 return;
 

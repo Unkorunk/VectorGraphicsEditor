@@ -79,6 +79,7 @@
                         <RowDefinition></RowDefinition>
                         <RowDefinition></RowDefinition>
                         <RowDefinition></RowDefinition>
+                        <RowDefinition></RowDefinition>
                     </Grid.RowDefinitions>
 
                     <StackPanel Name="FirstColorPanel" Orientation="Horizontal" Grid.Row="0" VerticalAlignment="Bottom" HorizontalAlignment="Center">
@@ -89,6 +90,7 @@
                     </StackPanel>
 
                     <Button Grid.Row="2" Name="ButtonClear" Content="Clear" Click="ButtonClear_Click"></Button>
+                    <Button Grid.Row="3" Name="ButtonReset" Content="Reset" Click="ButtonReset_Click"></Button>
                 </Grid>
             </Grid>
         </Grid>
