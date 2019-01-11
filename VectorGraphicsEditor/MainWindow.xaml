@@ -17,6 +17,7 @@
         <Image x:Key="Star" Source="Resources/star.png"></Image>
         <Image x:Key="Loupe" Source="Resources/loupe.png"></Image>
         <Image x:Key="Hand" Source="Resources/hand.png"></Image>
+        <Image x:Key="SelectTool" Source="Resources/hand.png"></Image>
     </Window.Resources>
 
     <Grid>

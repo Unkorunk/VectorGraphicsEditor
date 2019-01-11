@@ -9,6 +9,7 @@ namespace VectorGraphicsEditor.Figures
         protected List<Point> points;
         public System.Windows.Media.Pen pen = new System.Windows.Media.Pen(Brushes.Black, 1.0);
         public Brush brush = new SolidColorBrush(Colors.Transparent);
+        public bool Selected = false;
 
         public Figure()
         {

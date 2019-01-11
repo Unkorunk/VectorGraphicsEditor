@@ -77,6 +77,7 @@
     <Compile Include="Tools\PenTool.cs" />
     <Compile Include="Tools\RectangleTool.cs" />
     <Compile Include="Tools\RoundRectTool.cs" />
+    <Compile Include="Tools\SelectTool.cs" />
     <Compile Include="Tools\StarTool.cs" />
     <Compile Include="Tools\Tool.cs" />
     <Page Include="GUI\Color.xaml">

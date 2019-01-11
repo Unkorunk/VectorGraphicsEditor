@@ -24,7 +24,8 @@ namespace VectorGraphicsEditor
             new RoundRectTool(),
             new StarTool(),
             new Loupe(),
-            new Hand()
+            new Hand(),
+            new SelectTool()
         };
 
         private Tool toolNow = tools[0];
@@ -73,7 +74,7 @@ namespace VectorGraphicsEditor
 
             string[] namesBtn =
             {
-                "Pen", "Line", "Ellipse", "Rectangle", "RoundRect", "Star", "Loupe", "Hand"
+                "Pen", "Line", "Ellipse", "Rectangle", "RoundRect", "Star", "Loupe", "Hand", "SelectTool"
             };
 
             for (var i = 0; i < namesBtn.Length; i++)
