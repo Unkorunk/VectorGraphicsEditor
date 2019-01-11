@@ -53,21 +53,6 @@ namespace VectorGraphicsEditor.Tools
                 if (figure is Ellipse ellipse)
                 {
                     ellipse.Selected = false;
-
-                    var (k, l) = CalcLine(point0, Point.Add(point0, new Vector(0.0, size.Y)));
-
-                    var a = ellipse.RadiusY * ellipse.RadiusY;
-                    var b = -(2 * ellipse.X * ellipse.RadiusY * ellipse.RadiusY +
-                                k * ellipse.RadiusX * ellipse.RadiusX);
-                    var c = ellipse.X * ellipse.X * ellipse.RadiusY * ellipse.RadiusY + l *
-                               (ellipse.RadiusX * ellipse.RadiusX - ellipse.Y * ellipse.RadiusX * ellipse.RadiusX -
-                                ellipse.RadiusX * ellipse.RadiusX * ellipse.RadiusY * ellipse.RadiusY);
-
-                    var d = b * b - 4 * a * c;
-
-                    if (a == 0 && b == 0 && c != 0 || d < 0) continue;
-
-                    ellipse.Selected = true;
                 }
             }
         }
