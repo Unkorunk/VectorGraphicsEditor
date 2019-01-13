@@ -9,7 +9,7 @@ namespace VectorGraphicsEditor.Figures
 
         public override void Draw(DrawingContext drawingContext)
         {
-            drawingContext.DrawLine(this.pen, Transformations.GoToGlobal(points[0]), Transformations.GoToGlobal(points[1]));
+            drawingContext.DrawLine(Selected ? new System.Windows.Media.Pen(Brushes.Blue, this.pen.Thickness) : this.pen, Transformations.GoToGlobal(points[0]), Transformations.GoToGlobal(points[1]));
         }
     }
 }

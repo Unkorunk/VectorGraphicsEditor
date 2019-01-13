@@ -34,6 +34,11 @@ namespace VectorGraphicsEditor.Figures
             points.Add(point);
         }
 
+        public int CountPoint()
+        {
+            return points.Count;
+        }
+
         public Point GetPoint(int index)
         {
             return points[index];

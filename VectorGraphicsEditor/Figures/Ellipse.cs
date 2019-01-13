@@ -25,7 +25,7 @@ namespace VectorGraphicsEditor.Figures
             X = center.X;
             Y = center.Y;
 
-            drawingContext.DrawEllipse(Selected ? Brushes.Blue : this.brush, this.pen, center, RadiusX, RadiusY);
+            drawingContext.DrawEllipse(this.brush, Selected ? new System.Windows.Media.Pen(Brushes.Blue, this.pen.Thickness) : this.pen, center, RadiusX, RadiusY);
             
         }
     }

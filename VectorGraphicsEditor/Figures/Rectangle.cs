@@ -15,7 +15,7 @@ namespace VectorGraphicsEditor.Figures
 
             var size = Point.Subtract(point1, point2);
 
-            drawingContext.DrawRectangle(this.brush, this.pen, new Rect(Transformations.GoToGlobal(points[1]), size));
+            drawingContext.DrawRectangle(this.brush, Selected ? new System.Windows.Media.Pen(Brushes.Blue, this.pen.Thickness) : this.pen, new Rect(Transformations.GoToGlobal(points[1]), size));
         }
     }
 }
