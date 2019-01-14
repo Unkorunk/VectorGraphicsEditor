@@ -10,7 +10,7 @@ namespace VectorGraphicsEditor.Tools
         {
             base.MouseDown(mousePosition);
 
-            GlobalVars.Figures.Add(new Star(GlobalVars.Pen.Clone(), GlobalVars.Brush.Clone()));
+            GlobalVars.Figures.Add(new Star(GlobalVars.Pen.Clone(), GlobalVars.ColorBrush));
             GlobalVars.Figures[GlobalVars.Figures.Count - 1].AddPoint(mousePosition);
             GlobalVars.Figures[GlobalVars.Figures.Count - 1].AddPoint(mousePosition);
 

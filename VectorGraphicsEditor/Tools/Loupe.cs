@@ -14,7 +14,7 @@ namespace VectorGraphicsEditor.Tools
         {
             base.MouseDown(mousePosition);
 
-            GlobalVars.Figures.Add(new Rectangle(GlobalVars.Pen.Clone(), Brushes.Transparent));
+            GlobalVars.Figures.Add(new Rectangle(new System.Windows.Media.Pen(Brushes.Black, 1.0), Colors.Transparent));
             GlobalVars.Figures[GlobalVars.Figures.Count - 1].AddPoint(mousePosition);
             GlobalVars.Figures[GlobalVars.Figures.Count - 1].AddPoint(mousePosition);
         }

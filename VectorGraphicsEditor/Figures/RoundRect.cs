@@ -6,7 +6,7 @@ namespace VectorGraphicsEditor.Figures
 {
     class RoundRect : Figure
     {
-        public RoundRect(System.Windows.Media.Pen pen, Brush brush) : base(pen, brush) { }
+        public RoundRect(System.Windows.Media.Pen pen, Color colorBrush) : base(pen, colorBrush) { }
 
         public double RadiusX = 10, RadiusY = 10;
 

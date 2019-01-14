@@ -11,7 +11,7 @@ namespace VectorGraphicsEditor.Figures
 
         public List<Point> forSelectTool = new List<Point>();
 
-        public Star(System.Windows.Media.Pen pen, Brush brush) : base(pen, brush) { }
+        public Star(System.Windows.Media.Pen pen, Color colorBrush) : base(pen, colorBrush) { }
 
         public override void Draw(DrawingContext drawingContext)
         {

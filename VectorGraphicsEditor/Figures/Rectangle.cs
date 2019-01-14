@@ -6,7 +6,7 @@ namespace VectorGraphicsEditor.Figures
 {
     class Rectangle : Figure
     {
-        public Rectangle(System.Windows.Media.Pen pen, Brush brush) : base(pen, brush) { }
+        public Rectangle(System.Windows.Media.Pen pen, Color colorBrush) : base(pen, colorBrush) { }
 
         public override void Draw(DrawingContext drawingContext)
         {

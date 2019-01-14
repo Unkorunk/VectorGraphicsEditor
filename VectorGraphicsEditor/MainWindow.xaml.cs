@@ -1,12 +1,21 @@
 ﻿using System;
+using System.Collections.Generic;
+using System.Drawing;
+using System.Reflection;
+using System.Reflection.Emit;
 using System.Windows;
 using System.Windows.Input;
-using System.Windows.Media;
 using System.Windows.Controls;
+using System.Windows.Media;
 using VectorGraphicsEditor.Tools;
 using VectorGraphicsEditor.Helpers;
+using Brush = System.Windows.Media.Brush;
+using Brushes = System.Windows.Media.Brushes;
 using Color = VectorGraphicsEditor.GUI.Color;
+using Delegate = System.Delegate;
+using Pen = System.Windows.Media.Pen;
 using PenTool = VectorGraphicsEditor.Tools.PenTool;
+using Size = System.Windows.Size;
 
 namespace VectorGraphicsEditor
 {
@@ -34,7 +43,7 @@ namespace VectorGraphicsEditor
 
         private void AddColorOnPanel(StackPanel panel, Brush brush)
         {
-            var color = new Button { Background = brush, Width = 20, Height = 20 };
+            var color = new Color { Fill = brush, Width = 20, Height = 20 };
             color.MouseDown += SelectColor;
             panel.Children.Add(color);
         }
@@ -60,6 +69,28 @@ namespace VectorGraphicsEditor
         {
             InitializeComponent();
 
+            GlobalVars.Settings.Add("RadiusX", new List<Delegate>());
+            GlobalVars.Settings.Add("RadiusY", new List<Delegate>());
+            GlobalVars.Settings.Add("Thickness", new List<Delegate>());
+            GlobalVars.Settings.Add("TypeLine", new List<Delegate>());
+            GlobalVars.Settings.Add("TypeBrush", new List<Delegate>());
+
+            foreach (var field in typeof(Figures.Figure.TLine).GetFields(BindingFlags.Public | BindingFlags.Static))
+            {
+                cbTypeLine.Items.Add(new TextBlock()
+                {
+                    Text = field.Name
+                });
+            }
+
+            foreach (var field in typeof(Figures.Figure.TBrush).GetFields(BindingFlags.Public | BindingFlags.Static))
+            {
+                cbTypeBrush.Items.Add(new TextBlock()
+                {
+                    Text = field.Name
+                });
+            }
+
             Brush[] colors =
             {
                 Brushes.Black, Brushes.Gray, Brushes.Brown, Brushes.Red, Brushes.OrangeRed, Brushes.Yellow, Brushes.Green,
@@ -69,7 +100,7 @@ namespace VectorGraphicsEditor
             };
 
             for (int i = 0; i < colors.Length; i++)
-                AddColorOnPanel(i < 10 ? FirstColorPanel : SecondColorPanel, colors[i]);
+                AddColorOnPanel(i < colors.Length / 2 ? FirstColorPanel : SecondColorPanel, colors[i]);
 
             string[] namesBtn =
             {
@@ -77,7 +108,7 @@ namespace VectorGraphicsEditor
             };
 
             for (var i = 0; i < namesBtn.Length; i++)
-                AddToolOnPanel(ButtonPanel, tools[i], namesBtn[i]);
+                AddToolOnPanel(i < tools.Length / 2 ? FirstButtonPanel : SecondButtonPanel, tools[i], namesBtn[i]);
 
             planeHost = new PlaneHost
             {
@@ -110,7 +141,7 @@ namespace VectorGraphicsEditor
             if (!(toolNow is Hand))
                 mousePosition = Transformations.GoToLocal(mousePosition);
 
-            if (!(toolNow is Hand) && !(toolNow is Loupe)/* && toolNow.IsDown*/)
+            if (!(toolNow is Hand) && !(toolNow is Loupe))
             {
                 ScrollBarX.Minimum = Math.Min(ScrollBarX.Minimum, mousePosition.X / 100);
                 ScrollBarX.Maximum = Math.Max(ScrollBarX.Maximum, mousePosition.X / 100);
@@ -209,7 +240,7 @@ namespace VectorGraphicsEditor
             }
             else
             {
-                GlobalVars.Brush = ((Color) sender).Fill;
+                GlobalVars.ColorBrush = (((Color) sender).Fill as SolidColorBrush).Color;
                 SecondColor.Fill = ((Color) sender).Fill;
             }
 
@@ -251,6 +282,109 @@ namespace VectorGraphicsEditor
             Transformations.ScaleZoom = 1.0;
             Transformations.OffsetPos = new Vector(0, 0);
             planeHost.Update();
+        }
+
+        private void TbThickness_GotFocus(object sender, RoutedEventArgs e)
+        {
+            if (tbThickness.Text == "Thickness")
+            {
+                tbThickness.Foreground = Brushes.Black;
+                tbThickness.Text = "";
+            }
+        }
+
+        private void TbThickness_LostFocus(object sender, RoutedEventArgs e)
+        {
+            if (string.IsNullOrWhiteSpace(tbThickness.Text))
+            {
+                tbThickness.Foreground = Brushes.Gray;
+                tbThickness.Text = "Thickness";
+            }
+        }
+
+        private void TbRadiusX_GotFocus(object sender, RoutedEventArgs e)
+        {
+            if (tbRadiusX.Text == "Radius X")
+            {
+                tbRadiusX.Foreground = Brushes.Black;
+                tbRadiusX.Text = "";
+            }
+        }
+
+        private void TbRadiusX_LostFocus(object sender, RoutedEventArgs e)
+        {
+            if (string.IsNullOrWhiteSpace(tbRadiusX.Text))
+            {
+                tbRadiusX.Foreground = Brushes.Gray;
+                tbRadiusX.Text = "Radius X"; 
+            }
+        }
+
+        private void TbRadiusY_GotFocus(object sender, RoutedEventArgs e)
+        {
+            if (tbRadiusY.Text == "Radius Y")
+            {
+                tbRadiusY.Foreground = Brushes.Black;
+                tbRadiusY.Text = "";
+            }
+        }
+
+        private void TbRadiusY_LostFocus(object sender, RoutedEventArgs e)
+        {
+            if (string.IsNullOrWhiteSpace(tbRadiusY.Text))
+            {
+                tbRadiusY.Foreground = Brushes.Gray;
+                tbRadiusY.Text = "Radius Y";
+            }
+        }
+
+
+        private void TbThickness_TextChanged(object sender, TextChangedEventArgs e)
+        {
+            if (!GlobalVars.Settings.ContainsKey("Thickness") || !double.TryParse(tbThickness.Text, out var result) || Math.Abs(result) < double.Epsilon) return;
+
+            foreach (var del in GlobalVars.Settings["Thickness"])
+            {
+                del.DynamicInvoke(result);
+            }
+        }
+
+        private void TbRadiusX_TextChanged(object sender, TextChangedEventArgs e)
+        {
+            if (!GlobalVars.Settings.ContainsKey("RadiusX") || !double.TryParse(tbRadiusX.Text, out var result) || Math.Abs(result) < double.Epsilon) return;
+
+            foreach (var prop in GlobalVars.Settings["RadiusX"])
+                prop.DynamicInvoke(result);
+        }
+
+        private void TbRadiusY_TextChanged(object sender, TextChangedEventArgs e)
+        {
+            if (!GlobalVars.Settings.ContainsKey("RadiusY") || !double.TryParse(tbRadiusY.Text, out var result) || Math.Abs(result) < double.Epsilon) return;
+
+            foreach (var prop in GlobalVars.Settings["RadiusY"])
+                prop.DynamicInvoke(result);
+        }
+
+        private void CbTypeLine_SelectionChanged(object sender, SelectionChangedEventArgs e)
+        {
+            if (!GlobalVars.Settings.ContainsKey("TypeLine")) return;
+
+            foreach (var prop in GlobalVars.Settings["TypeLine"])
+            {
+                var field = typeof(Figures.Figure.TLine).GetField((cbTypeLine.SelectedItem as TextBlock).Text);
+                prop.DynamicInvoke(field.GetValue(null));
+            }
+        }
+
+        private void CbTypeBrush_SelectionChanged(object sender, SelectionChangedEventArgs e)
+        {
+            if (!GlobalVars.Settings.ContainsKey("TypeBrush")) return;
+
+            foreach (var prop in GlobalVars.Settings["TypeBrush"])
+            {
+                var field = typeof(Figures.Figure.TBrush).GetField((cbTypeBrush.SelectedItem as TextBlock).Text);
+                prop.DynamicInvoke(field.GetValue(null));
+            }
         }
     }
 }

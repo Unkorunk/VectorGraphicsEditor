@@ -1,4 +1,6 @@
 ﻿using System;
+using System.Collections.Generic;
+using System.Linq;
 using System.Windows;
 using System.Windows.Media;
 using VectorGraphicsEditor.Figures;
@@ -15,7 +17,7 @@ namespace VectorGraphicsEditor.Tools
         {
             base.MouseDown(mousePosition);
 
-            GlobalVars.Figures.Add(new Rectangle(GlobalVars.Pen.Clone(), Brushes.Transparent));
+            GlobalVars.Figures.Add(new Rectangle(new System.Windows.Media.Pen(Brushes.Black, 1.0), Colors.Transparent));
             GlobalVars.Figures[GlobalVars.Figures.Count - 1].AddPoint(mousePosition);
             GlobalVars.Figures[GlobalVars.Figures.Count - 1].AddPoint(mousePosition);
         }
@@ -77,9 +79,7 @@ namespace VectorGraphicsEditor.Tools
                 c = ellipse.Y * ellipse.Y * ellipse.RadiusX * ellipse.RadiusX +
                     ellipse.RadiusY * ellipse.RadiusY * (point0.X - ellipse.X) * (point0.X - ellipse.X) -
                     ellipse.RadiusX * ellipse.RadiusX * ellipse.RadiusY * ellipse.RadiusY;
-
             }
-        
 
             var d = b * b - 4 * a * c;
 
@@ -167,6 +167,8 @@ namespace VectorGraphicsEditor.Tools
             point0.Y = Math.Min(point0.Y, point1.Y);
 
             GlobalVars.Figures.RemoveAt(GlobalVars.Figures.Count - 1);
+
+            foreach (var key in GlobalVars.Settings.Keys) GlobalVars.Settings[key].Clear();
 
             // TODO: Maybe move intersaction to shapes classes?
             for (int i = 0; i < GlobalVars.Figures.Count; i++)
@@ -273,22 +275,22 @@ namespace VectorGraphicsEditor.Tools
                         
                         if (!roundRect.Selected)
                         {
-                            var ellipse1 = new Ellipse(null, null)
+                            var ellipse1 = new Ellipse(null, Colors.Transparent)
                             {
                                 RadiusX = roundRect.RadiusX, RadiusY = roundRect.RadiusY,
                                 X = startPoint.X + roundRect.RadiusX, Y = startPoint.Y + roundRect.RadiusY
                             };
-                            var ellipse2 = new Ellipse(null, null)
+                            var ellipse2 = new Ellipse(null, Colors.Transparent)
                             {
                                 RadiusX = roundRect.RadiusX, RadiusY = roundRect.RadiusY,
                                 X = startPoint.X + vector.X - roundRect.RadiusX, Y = startPoint.Y + roundRect.RadiusY
                             };
-                            var ellipse3 = new Ellipse(null, null)
+                            var ellipse3 = new Ellipse(null, Colors.Transparent)
                             {
                                 RadiusX = roundRect.RadiusX, RadiusY = roundRect.RadiusY,
                                 X = startPoint.X + roundRect.RadiusX, Y = startPoint.Y + vector.Y - roundRect.RadiusY
                             };
-                            var ellipse4 = new Ellipse(null, null)
+                            var ellipse4 = new Ellipse(null, Colors.Transparent)
                             {
                                 RadiusX = roundRect.RadiusX, RadiusY = roundRect.RadiusY,
                                 X = startPoint.X + vector.X - roundRect.RadiusX,
@@ -340,6 +342,38 @@ namespace VectorGraphicsEditor.Tools
                     }
                 }
             }
+
+
+            // Reflection ???????
+
+            for (var i = 0; i < GlobalVars.Figures.Count; i++)
+            {
+                if (GlobalVars.Figures[i].Selected)
+                {
+                    var type = GlobalVars.Figures[i].GetType();
+                    var properties = type.GetProperties();
+
+                    for (int j = 0; j < properties.Length; j++)
+                    {
+                        if (GlobalVars.Settings.Keys.Contains(properties[j].Name))
+                        {
+                            var tArgs = new List<Type>();
+                            foreach (var param in properties[j].GetSetMethod().GetParameters())
+                                tArgs.Add(param.ParameterType);
+                            tArgs.Add(properties[j].GetSetMethod().ReturnType);
+                            var delDecltype = System.Linq.Expressions.Expression.GetDelegateType(tArgs.ToArray());
+
+                            GlobalVars.Settings[properties[j].Name].Add(properties[j].GetSetMethod().CreateDelegate(delDecltype,
+                                GlobalVars.Figures[i]));
+                        }
+                    }
+
+                }
+            }
+
+
+
+
         }
 
         public override void MouseLeave()

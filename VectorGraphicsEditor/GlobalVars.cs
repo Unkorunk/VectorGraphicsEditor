@@ -1,4 +1,6 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
+using System.Reflection;
 using System.Windows;
 using System.Windows.Controls.Primitives;
 using System.Windows.Media;
@@ -14,7 +16,7 @@ namespace VectorGraphicsEditor
 
         public static List<Figure> Figures = new List<Figure>();
         public static System.Windows.Media.Pen Pen = new System.Windows.Media.Pen(Brushes.Black, 1.0);
-        public static Brush Brush = new SolidColorBrush(Colors.Transparent);
+        public static Color ColorBrush = Colors.Transparent;
 
         public static Size SizeCanvas;
 
@@ -22,5 +24,8 @@ namespace VectorGraphicsEditor
         public static ScrollBar ScrollBarY;
 
         public static Label LabelScaleZoom;
+
+        public static Dictionary<string, List<Delegate>> Settings = new Dictionary<string, List<Delegate>>();
+
     }
 }

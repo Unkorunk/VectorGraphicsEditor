@@ -40,15 +40,76 @@
 
         <Grid Grid.Row="0" Background="WhiteSmoke">
             <Grid.ColumnDefinitions>
-                <ColumnDefinition ></ColumnDefinition>
+                <ColumnDefinition Width="0.5*"></ColumnDefinition>
+                <ColumnDefinition Width="0.6*"></ColumnDefinition>
                 <ColumnDefinition></ColumnDefinition>
             </Grid.ColumnDefinitions>
 
-            <WrapPanel Name="ButtonPanel" Height="Auto" Width="Auto" Orientation="Horizontal" VerticalAlignment="Bottom" HorizontalAlignment="Center">
+            <Grid Name="ButtonGrid">
+                <Grid.RowDefinitions>
+                    <RowDefinition ></RowDefinition>
+                    <RowDefinition></RowDefinition>
+                </Grid.RowDefinitions>
 
-            </WrapPanel>
+                <StackPanel Name="FirstButtonPanel" Orientation="Horizontal" Grid.Row="0" VerticalAlignment="Bottom" HorizontalAlignment="Center">
 
-            <Grid Grid.Row="0" Grid.Column="1">
+                </StackPanel>
+                <StackPanel Name="SecondButtonPanel" Orientation="Horizontal" Grid.Row="1" VerticalAlignment="Top" HorizontalAlignment="Center">
+
+                </StackPanel>
+            </Grid>
+
+            <Grid Name="SettingsGrid" Grid.Row="0" Grid.Column="1">
+                <Grid.RowDefinitions>
+                    <RowDefinition ></RowDefinition>
+                    <RowDefinition></RowDefinition>
+                </Grid.RowDefinitions>
+
+                <Grid Grid.Row="0">
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition></ColumnDefinition>
+                        <ColumnDefinition></ColumnDefinition>
+                        <ColumnDefinition></ColumnDefinition>
+                    </Grid.ColumnDefinitions>
+
+                    <TextBox Name="tbThickness" Text="Thickness" Grid.Column="0" HorizontalContentAlignment="Center" VerticalContentAlignment="Center" GotFocus="TbThickness_GotFocus" LostFocus="TbThickness_LostFocus" Foreground="Gray" TextChanged="TbThickness_TextChanged"></TextBox>
+                    <TextBox Name="tbRadiusX" Text="Radius X" Grid.Column="1" HorizontalContentAlignment="Center" VerticalContentAlignment="Center" GotFocus="TbRadiusX_GotFocus" LostFocus="TbRadiusX_LostFocus" Foreground="Gray" TextChanged="TbRadiusX_TextChanged"/>
+                    <TextBox Name="tbRadiusY" Text="Radius Y" Grid.Column="2" HorizontalContentAlignment="Center" VerticalContentAlignment="Center" GotFocus="TbRadiusY_GotFocus" LostFocus="TbRadiusY_LostFocus" Foreground="Gray" TextChanged="TbRadiusY_TextChanged"></TextBox>
+                </Grid>
+
+               
+
+                <Grid Grid.Row="1">
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition></ColumnDefinition>
+                        <ColumnDefinition></ColumnDefinition>
+                    </Grid.ColumnDefinitions>
+
+                    <Grid Grid.Column="0">
+                        <Grid.RowDefinitions>
+                            <RowDefinition></RowDefinition>
+                            <RowDefinition></RowDefinition>
+                        </Grid.RowDefinitions>
+
+                        <TextBlock Grid.Row="0" TextAlignment="Center" Text="Type Line"></TextBlock>
+                        <ComboBox x:Name="cbTypeLine" Grid.Row="1" VerticalContentAlignment="Center" HorizontalContentAlignment="Center" SelectionChanged="CbTypeLine_SelectionChanged"/>
+                    </Grid>
+
+                    <Grid Grid.Column="1">
+                        <Grid.RowDefinitions>
+                            <RowDefinition></RowDefinition>
+                            <RowDefinition></RowDefinition>
+                        </Grid.RowDefinitions>
+
+                        <TextBlock Grid.Row="0" TextAlignment="Center" Text="Type Brush"></TextBlock>
+                        <ComboBox Name="cbTypeBrush" Grid.Row="1" HorizontalContentAlignment="Center" VerticalContentAlignment="Center" SelectionChanged="CbTypeBrush_SelectionChanged"></ComboBox>
+                    </Grid>
+                </Grid>
+
+               
+            </Grid>
+
+            <Grid Grid.Row="0" Grid.Column="2">
                 <Grid.ColumnDefinitions>
                     <ColumnDefinition></ColumnDefinition>
                     <ColumnDefinition></ColumnDefinition>
