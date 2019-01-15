@@ -9,7 +9,7 @@ namespace VectorGraphicsEditor.Tools
         {
             base.MouseDown(mousePosition);
 
-            GlobalVars.Figures.Add(new Pen(GlobalVars.Pen.Clone()));
+            GlobalVars.Figures.Add(new MyPen(GlobalVars.Pen.Clone()));
         }
 
         public override void MouseMove(Point mousePosition)

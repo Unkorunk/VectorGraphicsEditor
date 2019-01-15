@@ -4,6 +4,7 @@ using System.Linq;
 using System.Windows;
 using System.Windows.Media;
 using VectorGraphicsEditor.Figures;
+using VectorGraphicsEditor.Helpers;
 
 // TODO: Add check mouse in shape
 
@@ -17,7 +18,10 @@ namespace VectorGraphicsEditor.Tools
         {
             base.MouseDown(mousePosition);
 
-            GlobalVars.Figures.Add(new Rectangle(new System.Windows.Media.Pen(Brushes.Black, 1.0), Colors.Transparent));
+            GlobalVars.Figures.Add(new Rectangle(new System.Windows.Media.Pen(Brushes.Black, 2.0)
+            {
+                DashStyle = new DashStyle(new List<double> { 1, 2 }, 0.0)
+            }, Colors.Transparent));
             GlobalVars.Figures[GlobalVars.Figures.Count - 1].AddPoint(mousePosition);
             GlobalVars.Figures[GlobalVars.Figures.Count - 1].AddPoint(mousePosition);
         }
@@ -43,8 +47,13 @@ namespace VectorGraphicsEditor.Tools
             return Math.Max(a, c) <= Math.Min(b, d);
         }
 
-        private bool Intersaction(Point a, Point b, Point c, Point d)
+        private bool Intersaction(Point a0, Point b0, Point c0, Point d0)
         {
+            var a = Transformations.GoToGlobal(a0);
+            var b = Transformations.GoToGlobal(b0);
+            var c = Transformations.GoToGlobal(c0);
+            var d = Transformations.GoToGlobal(d0);
+
             return intersect_1(a.X, b.X, c.X, d.X)
                    && intersect_1(a.Y, b.Y, c.Y, d.Y)
                    && area(a, b, c) * area(a, b, d) <= 0
@@ -52,32 +61,37 @@ namespace VectorGraphicsEditor.Tools
         }
 
         // TODO: Fix
-        private bool Intersaction(Ellipse ellipse, Point point0, Point point1, bool sideLeftRight)
+        private bool Intersaction(Ellipse ellipse, Point _point0, Point _point1, bool sideLeftRight)
         {
             double a, b, c;
+
+            var point0 = Transformations.GoToGlobal(_point0);
+            var point1 = Transformations.GoToGlobal(_point1);
+
+            var point2 = new Point(ellipse.X, ellipse.Y);
 
             if (!sideLeftRight)
             {
                 a = ellipse.RadiusY * ellipse.RadiusY;
 
-                b = -2 * ellipse.X * ellipse.RadiusY * ellipse.RadiusY;
+                b = -2 * point2.X * ellipse.RadiusY * ellipse.RadiusY;
 
-                c = ellipse.X * ellipse.X * ellipse.RadiusY * ellipse.RadiusY +
-                    ellipse.RadiusX * ellipse.RadiusX * (point0.Y - ellipse.Y) * (point0.Y - ellipse.Y) -
+                c = point2.X * point2.X * ellipse.RadiusY * ellipse.RadiusY +
+                    ellipse.RadiusX * ellipse.RadiusX * (point0.Y - point2.Y) * (point0.Y - point2.Y) -
                     ellipse.RadiusX * ellipse.RadiusX * ellipse.RadiusY * ellipse.RadiusY;
             }
             else
             {
-                ellipse.Y *= -1;
+                point2.Y *= -1;
                 point0.Y *= -1;
                 point1.Y *= -1;
 
                 a = ellipse.RadiusX * ellipse.RadiusX;
 
-                b = -2 * ellipse.Y * ellipse.RadiusX * ellipse.RadiusX;
+                b = -2 * point2.Y * ellipse.RadiusX * ellipse.RadiusX;
 
-                c = ellipse.Y * ellipse.Y * ellipse.RadiusX * ellipse.RadiusX +
-                    ellipse.RadiusY * ellipse.RadiusY * (point0.X - ellipse.X) * (point0.X - ellipse.X) -
+                c = point2.Y * point2.Y * ellipse.RadiusX * ellipse.RadiusX +
+                    ellipse.RadiusY * ellipse.RadiusY * (point0.X - point2.X) * (point0.X - point2.X) -
                     ellipse.RadiusX * ellipse.RadiusX * ellipse.RadiusY * ellipse.RadiusY;
             }
 
@@ -94,7 +108,7 @@ namespace VectorGraphicsEditor.Tools
                     {
                         if (sideLeftRight)
                         {
-                            ellipse.Y *= -1;
+                            point2.Y *= -1;
                             point0.Y *= -1;
                             point1.Y *= -1;
                         }
@@ -127,13 +141,13 @@ namespace VectorGraphicsEditor.Tools
                 -point0.Y <= -iPoint0.Y && -point1.Y >= -iPoint0.Y ||
                 -point0.Y <= -iPoint1.Y && -point1.Y >= -iPoint1.Y ||
 
-                ((point0.X - ellipse.X) * (point0.X - ellipse.X) / (ellipse.RadiusX * ellipse.RadiusX)) +
-                ((point0.Y - ellipse.Y) * (point0.Y - ellipse.Y)) / (ellipse.RadiusY * ellipse.RadiusY) <= 1
+                ((point0.X - point2.X) * (point0.X - point2.X) / (ellipse.RadiusX * ellipse.RadiusX)) +
+                ((point0.Y - point2.Y) * (point0.Y - point2.Y)) / (ellipse.RadiusY * ellipse.RadiusY) <= 1
             )
             {
                 if (sideLeftRight)
                 {
-                    ellipse.Y *= -1;
+                    point2.Y *= -1;
                     point0.Y *= -1;
                     point1.Y *= -1;
                 }
@@ -143,7 +157,7 @@ namespace VectorGraphicsEditor.Tools
 
             if (sideLeftRight)
             {
-                ellipse.Y *= -1;
+                point2.Y *= -1;
                 point0.Y *= -1;
                 point1.Y *= -1;
             }
@@ -155,16 +169,18 @@ namespace VectorGraphicsEditor.Tools
         {
             base.MouseUp(mousePosition);
 
+            {
+                var a = GlobalVars.Figures[GlobalVars.Figures.Count - 1].GetPoint(0);
+                var b = GlobalVars.Figures[GlobalVars.Figures.Count - 1].GetPoint(1);
+
+                GlobalVars.Figures[GlobalVars.Figures.Count - 1].SetPoint(0, new Point(Math.Min(a.X, b.X), Math.Min(a.Y, b.Y)));
+                GlobalVars.Figures[GlobalVars.Figures.Count - 1].SetPoint(1, new Point(Math.Max(a.X, b.X), Math.Max(a.Y, b.Y)));
+            }
+
             var point0 = GlobalVars.Figures[GlobalVars.Figures.Count - 1].GetPoint(0);
             var point1 = GlobalVars.Figures[GlobalVars.Figures.Count - 1].GetPoint(1);
 
             var size = point1 - point0;
-
-            size.X = Math.Abs(size.X);
-            size.Y = Math.Abs(size.Y);
-
-            point0.X = Math.Min(point0.X, point1.X);
-            point0.Y = Math.Min(point0.Y, point1.Y);
 
             GlobalVars.Figures.RemoveAt(GlobalVars.Figures.Count - 1);
 
@@ -208,7 +224,7 @@ namespace VectorGraphicsEditor.Tools
                                         Intersaction(line.GetPoint(0), line.GetPoint(1), new Point(point0.X, point0.Y + size.Y), new Point(point0.X + size.X, point0.Y + size.Y));
                     }
                 }
-                else if (figure is Figures.Pen pen)
+                else if (figure is Figures.MyPen pen)
                 {
                     for (int j = 0; j < figure.CountPoint() - 1 && !pen.Selected; j++)
                     {
@@ -273,51 +289,51 @@ namespace VectorGraphicsEditor.Tools
                                          Intersaction(startPoint + new Vector(vector.X, roundRect.RadiusY), startPoint + vector - new Vector(0.0, roundRect.RadiusY), point0, new Point(point0.X + size.X, point0.Y)) ||
                                          Intersaction(startPoint + new Vector(vector.X, roundRect.RadiusY), startPoint + vector - new Vector(0.0, roundRect.RadiusY), new Point(point0.X, point0.Y + size.Y), new Point(point0.X + size.X, point0.Y + size.Y));
                         
-                        if (!roundRect.Selected)
-                        {
-                            var ellipse1 = new Ellipse(null, Colors.Transparent)
-                            {
-                                RadiusX = roundRect.RadiusX, RadiusY = roundRect.RadiusY,
-                                X = startPoint.X + roundRect.RadiusX, Y = startPoint.Y + roundRect.RadiusY
-                            };
-                            var ellipse2 = new Ellipse(null, Colors.Transparent)
-                            {
-                                RadiusX = roundRect.RadiusX, RadiusY = roundRect.RadiusY,
-                                X = startPoint.X + vector.X - roundRect.RadiusX, Y = startPoint.Y + roundRect.RadiusY
-                            };
-                            var ellipse3 = new Ellipse(null, Colors.Transparent)
-                            {
-                                RadiusX = roundRect.RadiusX, RadiusY = roundRect.RadiusY,
-                                X = startPoint.X + roundRect.RadiusX, Y = startPoint.Y + vector.Y - roundRect.RadiusY
-                            };
-                            var ellipse4 = new Ellipse(null, Colors.Transparent)
-                            {
-                                RadiusX = roundRect.RadiusX, RadiusY = roundRect.RadiusY,
-                                X = startPoint.X + vector.X - roundRect.RadiusX,
-                                Y = startPoint.Y + vector.Y - roundRect.RadiusY
-                            };
+                        //if (!roundRect.Selected)
+                        //{
+                        //    var ellipse1 = new Ellipse(null, Colors.Transparent)
+                        //    {
+                        //        RadiusX = roundRect.RadiusX, RadiusY = roundRect.RadiusY,
+                        //        X = startPoint.X + roundRect.RadiusX, Y = startPoint.Y + roundRect.RadiusY
+                        //    };
+                        //    var ellipse2 = new Ellipse(null, Colors.Transparent)
+                        //    {
+                        //        RadiusX = roundRect.RadiusX, RadiusY = roundRect.RadiusY,
+                        //        X = startPoint.X + vector.X - roundRect.RadiusX, Y = startPoint.Y + roundRect.RadiusY
+                        //    };
+                        //    var ellipse3 = new Ellipse(null, Colors.Transparent)
+                        //    {
+                        //        RadiusX = roundRect.RadiusX, RadiusY = roundRect.RadiusY,
+                        //        X = startPoint.X + roundRect.RadiusX, Y = startPoint.Y + vector.Y - roundRect.RadiusY
+                        //    };
+                        //    var ellipse4 = new Ellipse(null, Colors.Transparent)
+                        //    {
+                        //        RadiusX = roundRect.RadiusX, RadiusY = roundRect.RadiusY,
+                        //        X = startPoint.X + vector.X - roundRect.RadiusX,
+                        //        Y = startPoint.Y + vector.Y - roundRect.RadiusY
+                        //    };
 
-                            roundRect.Selected =
-                                         Intersaction(ellipse1, point0, new Point(point0.X, point0.Y + size.Y), true) ||
-                                         Intersaction(ellipse1, new Point(point0.X + size.X, point0.Y), new Point(point0.X + size.X, point0.Y + size.Y), true) ||
-                                         Intersaction(ellipse1, point0, new Point(point0.X + size.X, point0.Y), false) ||
-                                         Intersaction(ellipse1, new Point(point0.X, point0.Y + size.Y), new Point(point0.X + size.X, point0.Y + size.Y), false) ||
+                        //    roundRect.Selected =
+                        //                 Intersaction(ellipse1, point0, new Point(point0.X, point0.Y + size.Y), true) ||
+                        //                 Intersaction(ellipse1, new Point(point0.X + size.X, point0.Y), new Point(point0.X + size.X, point0.Y + size.Y), true) ||
+                        //                 Intersaction(ellipse1, point0, new Point(point0.X + size.X, point0.Y), false) ||
+                        //                 Intersaction(ellipse1, new Point(point0.X, point0.Y + size.Y), new Point(point0.X + size.X, point0.Y + size.Y), false) ||
                                          
-                                         Intersaction(ellipse2, point0, new Point(point0.X, point0.Y + size.Y), true) ||
-                                         Intersaction(ellipse2, new Point(point0.X + size.X, point0.Y), new Point(point0.X + size.X, point0.Y + size.Y), true) ||
-                                         Intersaction(ellipse2, point0, new Point(point0.X + size.X, point0.Y), false) ||
-                                         Intersaction(ellipse2, new Point(point0.X, point0.Y + size.Y), new Point(point0.X + size.X, point0.Y + size.Y), false) ||
+                        //                 Intersaction(ellipse2, point0, new Point(point0.X, point0.Y + size.Y), true) ||
+                        //                 Intersaction(ellipse2, new Point(point0.X + size.X, point0.Y), new Point(point0.X + size.X, point0.Y + size.Y), true) ||
+                        //                 Intersaction(ellipse2, point0, new Point(point0.X + size.X, point0.Y), false) ||
+                        //                 Intersaction(ellipse2, new Point(point0.X, point0.Y + size.Y), new Point(point0.X + size.X, point0.Y + size.Y), false) ||
 
-                                         Intersaction(ellipse3, point0, new Point(point0.X, point0.Y + size.Y), true) ||
-                                         Intersaction(ellipse3, new Point(point0.X + size.X, point0.Y), new Point(point0.X + size.X, point0.Y + size.Y), true) ||
-                                         Intersaction(ellipse3, point0, new Point(point0.X + size.X, point0.Y), false) ||
-                                         Intersaction(ellipse3, new Point(point0.X, point0.Y + size.Y), new Point(point0.X + size.X, point0.Y + size.Y), false) ||
+                        //                 Intersaction(ellipse3, point0, new Point(point0.X, point0.Y + size.Y), true) ||
+                        //                 Intersaction(ellipse3, new Point(point0.X + size.X, point0.Y), new Point(point0.X + size.X, point0.Y + size.Y), true) ||
+                        //                 Intersaction(ellipse3, point0, new Point(point0.X + size.X, point0.Y), false) ||
+                        //                 Intersaction(ellipse3, new Point(point0.X, point0.Y + size.Y), new Point(point0.X + size.X, point0.Y + size.Y), false) ||
 
-                                         Intersaction(ellipse4, point0, new Point(point0.X, point0.Y + size.Y), true) ||
-                                         Intersaction(ellipse4, new Point(point0.X + size.X, point0.Y), new Point(point0.X + size.X, point0.Y + size.Y), true) ||
-                                         Intersaction(ellipse4, point0, new Point(point0.X + size.X, point0.Y), false) ||
-                                         Intersaction(ellipse4, new Point(point0.X, point0.Y + size.Y), new Point(point0.X + size.X, point0.Y + size.Y), false);
-                        }
+                        //                 Intersaction(ellipse4, point0, new Point(point0.X, point0.Y + size.Y), true) ||
+                        //                 Intersaction(ellipse4, new Point(point0.X + size.X, point0.Y), new Point(point0.X + size.X, point0.Y + size.Y), true) ||
+                        //                 Intersaction(ellipse4, point0, new Point(point0.X + size.X, point0.Y), false) ||
+                        //                 Intersaction(ellipse4, new Point(point0.X, point0.Y + size.Y), new Point(point0.X + size.X, point0.Y + size.Y), false);
+                        //}
                     }
                 }
                 else if (figure is Star star)
@@ -343,9 +359,6 @@ namespace VectorGraphicsEditor.Tools
                 }
             }
 
-
-            // Reflection ???????
-
             for (var i = 0; i < GlobalVars.Figures.Count; i++)
             {
                 if (GlobalVars.Figures[i].Selected)
@@ -370,10 +383,6 @@ namespace VectorGraphicsEditor.Tools
 
                 }
             }
-
-
-
-
         }
 
         public override void MouseLeave()

@@ -1,16 +1,19 @@
-﻿using System.Windows;
+﻿using System;
+using System.Windows;
 using System.Windows.Media;
+using System.Xml.Serialization;
 using VectorGraphicsEditor.Helpers;
 
 namespace VectorGraphicsEditor.Figures
 {
-    class Ellipse : Figure
+    [Serializable]
+    public class Ellipse : Figure
     {
         public double X, Y;
 
         public double RadiusX
         {
-            get => (points[0] - points[1]).X / 2;
+            get => Transformations.GoToGlobal((Point)(points[0] - points[1])).X / 2;
             set
             {
                 var centerX = points[0].X - (points[0] - points[1]).X / 2;
@@ -18,10 +21,9 @@ namespace VectorGraphicsEditor.Figures
                 points[1] = new Point(points[0].X + 2 * value, points[1].Y);
             }
         }
-
         public double RadiusY
         {
-            get => (points[0] - points[1]).Y / 2;
+            get => Transformations.GoToGlobal((Point)(points[0] - points[1])).Y / 2;
             set
             {
                 var centerY = points[0].Y - (points[0] - points[1]).Y / 2;
@@ -29,6 +31,8 @@ namespace VectorGraphicsEditor.Figures
                 points[1] = new Point(points[1].X, points[0].Y + 2 * value);
             }
         }
+
+        public Ellipse() { }
 
         public Ellipse(System.Windows.Media.Pen pen, Color colorBrush) : base(pen, colorBrush) { }
 

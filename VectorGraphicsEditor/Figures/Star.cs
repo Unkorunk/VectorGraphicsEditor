@@ -1,17 +1,24 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.Windows;
 using System.Windows.Media;
 using VectorGraphicsEditor.Helpers;
 
 namespace VectorGraphicsEditor.Figures
 {
-    class Star : Figure
+    [Serializable]
+    public class Star : Figure
     {
         public List<Point> _patternList = new List<Point>();
 
         public List<Point> forSelectTool = new List<Point>();
 
         public Star(System.Windows.Media.Pen pen, Color colorBrush) : base(pen, colorBrush) { }
+
+        public Star()
+        {
+
+        }
 
         public override void Draw(DrawingContext drawingContext)
         {

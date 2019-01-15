@@ -1,11 +1,18 @@
-﻿using System.Windows.Media;
+﻿using System;
+using System.Windows.Media;
 using VectorGraphicsEditor.Helpers;
 
 namespace VectorGraphicsEditor.Figures
 {
-    class Line : Figure
+    [Serializable]
+    public class Line : Figure
     {
         public Line(System.Windows.Media.Pen pen) : base(pen) { }
+
+        public Line()
+        {
+
+        }
 
         public override void Draw(DrawingContext drawingContext)
         {

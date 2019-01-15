@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Drawing;
+using System.IO;
 using System.Reflection;
 using System.Reflection.Emit;
 using System.Windows;
@@ -132,6 +133,9 @@ namespace VectorGraphicsEditor
                 ScrollBarY.Maximum = Canvas.ActualHeight / 100;
             };
             SizeChanged += (sender, args) => { GlobalVars.SizeCanvas = new Size(Canvas.ActualWidth, Canvas.ActualHeight); };
+
+
+            GlobalVars.LoadData();
         }
 
         private void Canvas_MouseMove(object sender, MouseEventArgs e)
@@ -141,7 +145,7 @@ namespace VectorGraphicsEditor
             if (!(toolNow is Hand))
                 mousePosition = Transformations.GoToLocal(mousePosition);
 
-            if (!(toolNow is Hand) && !(toolNow is Loupe))
+            if (!(toolNow is Hand) && !(toolNow is Loupe) && !(toolNow is SelectTool))
             {
                 ScrollBarX.Minimum = Math.Min(ScrollBarX.Minimum, mousePosition.X / 100);
                 ScrollBarX.Maximum = Math.Max(ScrollBarX.Maximum, mousePosition.X / 100);
@@ -385,6 +389,11 @@ namespace VectorGraphicsEditor
                 var field = typeof(Figures.Figure.TBrush).GetField((cbTypeBrush.SelectedItem as TextBlock).Text);
                 prop.DynamicInvoke(field.GetValue(null));
             }
+        }
+
+        private void Window_Closed(object sender, EventArgs e)
+        {
+            File.WriteAllText("data.xml", GlobalVars.SaveData());
         }
     }
 }

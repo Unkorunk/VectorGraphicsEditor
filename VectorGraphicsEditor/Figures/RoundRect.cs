@@ -1,12 +1,18 @@
-﻿using System.Windows;
+﻿using System;
+using System.Windows;
 using System.Windows.Media;
 using VectorGraphicsEditor.Helpers;
 
 namespace VectorGraphicsEditor.Figures
 {
-    class RoundRect : Figure
+    [Serializable]
+    public class RoundRect : Figure
     {
         public RoundRect(System.Windows.Media.Pen pen, Color colorBrush) : base(pen, colorBrush) { }
+
+        public RoundRect()
+        {
+        }
 
         public double RadiusX = 10, RadiusY = 10;
 

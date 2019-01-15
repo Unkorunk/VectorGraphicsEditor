@@ -2,16 +2,27 @@
 using System.Collections.Generic;
 using System.Windows;
 using System.Windows.Media;
+using System.Xml.Serialization;
 
 namespace VectorGraphicsEditor.Figures
 {
+    [XmlInclude(typeof(Ellipse))]
+    [XmlInclude(typeof(SolidColorBrush))]
+    [XmlInclude(typeof(MatrixTransform))]
+    [XmlInclude(typeof(Line))]
+    [XmlInclude(typeof(Star))]
+    [XmlInclude(typeof(RoundRect))]
+    [XmlInclude(typeof(VectorGraphicsEditor.Figures.MyPen))]
+    [XmlInclude(typeof(Rectangle))]
+    [Serializable]
     public class Figure
     {
-        private Color colorBrush;
+        public Color colorBrush;
 
-        protected List<Point> points;
-        public System.Windows.Media.Pen pen = new System.Windows.Media.Pen(Brushes.Black, 1.0);
-        public Brush brush = new SolidColorBrush(Colors.Transparent);
+        public List<Point> points;
+        public System.Windows.Media.Pen pen;
+        public Brush brush;
+        
         public bool Selected = false;
 
         public enum TLine
@@ -36,7 +47,7 @@ namespace VectorGraphicsEditor.Figures
             set => this.pen.Thickness = value;
         }
 
-        private TLine _typeLine;
+        public TLine _typeLine;
         public TLine TypeLine
         {
             get => this._typeLine;
@@ -67,7 +78,7 @@ namespace VectorGraphicsEditor.Figures
             }
         }
 
-        private TBrush _typeBrush;
+        public TBrush _typeBrush;
         public TBrush TypeBrush
         {
             get => _typeBrush;
@@ -142,6 +153,8 @@ namespace VectorGraphicsEditor.Figures
         public Figure()
         {
             points = new List<Point>();
+            pen = new System.Windows.Media.Pen(Brushes.Black, 1.0);
+            brush = new SolidColorBrush(Colors.Transparent);
         }
 
         public Figure(System.Windows.Media.Pen pen, Color colorBrush)
