@@ -7,7 +7,7 @@
         xmlns:local1="clr-namespace:VectorGraphicsEditor.GUI"
         xmlns:system="clr-namespace:System;assembly=mscorlib"
         mc:Ignorable="d"
-        Title="VectorGraphicsEditor" Height="600" Width="800" MinHeight="200" MinWidth="740" Closed="Window_Closed">
+        Title="VectorGraphicsEditor" KeyUp="MainWindow_OnKeyUp" Height="600" Width="800" MinHeight="200" MinWidth="740" Closed="Window_Closed">
     <Window.Resources>
         <Image x:Key="Pen" Source="Resources/pen.png"></Image>
         <Image x:Key="Line" Source="Resources/line.png"></Image>

@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Windows;
 using System.Windows.Media;
-using System.Xml.Serialization;
+using System.Collections.Generic;
 using VectorGraphicsEditor.Helpers;
 
 namespace VectorGraphicsEditor.Figures
@@ -13,7 +13,7 @@ namespace VectorGraphicsEditor.Figures
 
         public double RadiusX
         {
-            get => Transformations.GoToGlobal((Point)(points[0] - points[1])).X / 2;
+            get => Math.Abs( Transformations.GoToGlobal((Point)(points[0] - points[1])).X / 2 );
             set
             {
                 var centerX = points[0].X - (points[0] - points[1]).X / 2;
@@ -23,7 +23,7 @@ namespace VectorGraphicsEditor.Figures
         }
         public double RadiusY
         {
-            get => Transformations.GoToGlobal((Point)(points[0] - points[1])).Y / 2;
+            get => Math.Abs( Transformations.GoToGlobal((Point)(points[0] - points[1])).Y / 2 );
             set
             {
                 var centerY = points[0].Y - (points[0] - points[1]).Y / 2;
@@ -34,7 +34,23 @@ namespace VectorGraphicsEditor.Figures
 
         public Ellipse() { }
 
-        public Ellipse(System.Windows.Media.Pen pen, Color colorBrush) : base(pen, colorBrush) { }
+        public Ellipse(Pen pen, Color colorBrush) : base(pen, colorBrush) { }
+
+        public override string GetSVG()
+        {
+            var point1 = points[0];
+            var point2 = points[1];
+
+            var size = Vector.Divide(Point.Subtract(point2, point1), 2.0);
+
+            var center = new Point(point1.X + size.X, point1.Y + size.Y);
+
+            var fill = ((SolidColorBrush) this.brush).Color.ToString().Remove(1, 2);
+            var stroke = ((SolidColorBrush) this.pen.Brush).Color.ToString().Remove(1, 2);
+            var alpha = ((SolidColorBrush)this.brush).Color.A / 255.0;
+
+            return $"<ellipse cx=\"{center.X:F}\" cy=\"{center.Y:F}\" fill-opacity=\"{alpha:F}\" rx=\"{size.X:F}\" ry=\"{size.Y:F}\" style=\"fill:{fill};stroke:{stroke};stroke-width:{Thickness:F}\" />";
+        }
 
         public override void Draw(DrawingContext drawingContext)
         {
@@ -48,7 +64,28 @@ namespace VectorGraphicsEditor.Figures
             X = center.X;
             Y = center.Y;
 
-            drawingContext.DrawEllipse(this.brush, Selected ? new System.Windows.Media.Pen(Brushes.Blue, this.pen.Thickness) : this.pen, center, size.X / 2, size.Y / 2);
+            if (Selected)
+            {
+                drawingContext.DrawRectangle(Brushes.Transparent, new Pen(Brushes.Blue, 2.0), new Rect(point1, point2));
+            }
+
+            drawingContext.DrawEllipse(this.brush, this.pen, center, size.X / 2, size.Y / 2);
+        }
+
+        public override object Clone()
+        {
+            return new Ellipse(this.pen, ((SolidColorBrush)this.brush).Color)
+            {
+                points = new List<Point>(points),
+                _typeBrush = this._typeBrush,
+                _typeLine = this._typeLine,
+                Thickness = this.Thickness,
+                colorBrush = this.colorBrush,
+                X = this.X,
+                Y = this.Y,
+                RadiusX = this.RadiusX,
+                RadiusY = this.RadiusY
+            };
         }
     }
 }

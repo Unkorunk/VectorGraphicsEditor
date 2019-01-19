@@ -14,9 +14,9 @@ namespace VectorGraphicsEditor.Tools
             GlobalVars.Figures[GlobalVars.Figures.Count - 1].AddPoint(mousePosition);
             GlobalVars.Figures[GlobalVars.Figures.Count - 1].AddPoint(mousePosition);
 
-            double angle = -33.0;
-            int count = 5;
-            for (int i = 0; i < count; i++)
+            var angle = -33.0;
+            var count = 5;
+            for (var i = 0; i < count; i++)
             {
                 ((Star) GlobalVars.Figures[GlobalVars.Figures.Count - 1])._patternList.Add(
                     new Point(Math.Cos(angle + 2 * Math.PI * i / count), Math.Sin(angle + 2 * Math.PI * i / count)));

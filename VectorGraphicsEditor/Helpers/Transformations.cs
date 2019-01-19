@@ -38,7 +38,6 @@ namespace VectorGraphicsEditor.Helpers
             get => scaleZoom;
         }
 
-
         public static Point GoToGlobal(Point point)
         {
             return new Point((point.X + offsetPos.X) * ScaleZoom, (point.Y + OffsetPos.Y) * ScaleZoom);

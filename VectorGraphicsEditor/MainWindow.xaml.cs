@@ -1,13 +1,16 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Drawing;
+using System.Globalization;
 using System.IO;
 using System.Reflection;
 using System.Reflection.Emit;
+using System.Threading;
 using System.Windows;
 using System.Windows.Input;
 using System.Windows.Controls;
 using System.Windows.Media;
+using VectorGraphicsEditor.Figures;
 using VectorGraphicsEditor.Tools;
 using VectorGraphicsEditor.Helpers;
 using Brush = System.Windows.Media.Brush;
@@ -16,6 +19,7 @@ using Color = VectorGraphicsEditor.GUI.Color;
 using Delegate = System.Delegate;
 using Pen = System.Windows.Media.Pen;
 using PenTool = VectorGraphicsEditor.Tools.PenTool;
+using Point = System.Windows.Point;
 using Size = System.Windows.Size;
 
 namespace VectorGraphicsEditor
@@ -68,6 +72,8 @@ namespace VectorGraphicsEditor
 
         public MainWindow()
         {
+            Thread.CurrentThread.CurrentCulture = new CultureInfo("en-US");
+
             InitializeComponent();
 
             GlobalVars.Settings.Add("RadiusX", new List<Delegate>());
@@ -134,8 +140,8 @@ namespace VectorGraphicsEditor
             };
             SizeChanged += (sender, args) => { GlobalVars.SizeCanvas = new Size(Canvas.ActualWidth, Canvas.ActualHeight); };
 
-
             GlobalVars.LoadData();
+            planeHost.Update();
         }
 
         private void Canvas_MouseMove(object sender, MouseEventArgs e)
@@ -351,6 +357,8 @@ namespace VectorGraphicsEditor
             {
                 del.DynamicInvoke(result);
             }
+
+            planeHost.Update();
         }
 
         private void TbRadiusX_TextChanged(object sender, TextChangedEventArgs e)
@@ -359,6 +367,8 @@ namespace VectorGraphicsEditor
 
             foreach (var prop in GlobalVars.Settings["RadiusX"])
                 prop.DynamicInvoke(result);
+
+            planeHost.Update();
         }
 
         private void TbRadiusY_TextChanged(object sender, TextChangedEventArgs e)
@@ -367,6 +377,8 @@ namespace VectorGraphicsEditor
 
             foreach (var prop in GlobalVars.Settings["RadiusY"])
                 prop.DynamicInvoke(result);
+
+            planeHost.Update();
         }
 
         private void CbTypeLine_SelectionChanged(object sender, SelectionChangedEventArgs e)
@@ -378,6 +390,7 @@ namespace VectorGraphicsEditor
                 var field = typeof(Figures.Figure.TLine).GetField((cbTypeLine.SelectedItem as TextBlock).Text);
                 prop.DynamicInvoke(field.GetValue(null));
             }
+            planeHost.Update();
         }
 
         private void CbTypeBrush_SelectionChanged(object sender, SelectionChangedEventArgs e)
@@ -389,11 +402,75 @@ namespace VectorGraphicsEditor
                 var field = typeof(Figures.Figure.TBrush).GetField((cbTypeBrush.SelectedItem as TextBlock).Text);
                 prop.DynamicInvoke(field.GetValue(null));
             }
+            planeHost.Update();
         }
 
         private void Window_Closed(object sender, EventArgs e)
         {
             File.WriteAllText("data.xml", GlobalVars.SaveData());
+            GlobalVars.SaveSVG("image.html");
+        }
+
+        private void Canvas_OnPreviewKeyUp(object sender, KeyEventArgs e)
+        {
+            
+        }
+
+
+        private List<Figure> copyFigures = new List<Figure>();
+        private void MainWindow_OnKeyUp(object sender, KeyEventArgs e)
+        {
+            if (e.Key == Key.X)
+            {
+                copyFigures.Clear();
+                for (int i = 0; i < GlobalVars.Figures.Count; i++)
+                {
+                    if (GlobalVars.Figures[i].Selected)
+                    {
+                        copyFigures.Add(GlobalVars.Figures[i]);
+                        GlobalVars.Figures.RemoveAt(i);
+                        i--;
+                    }
+                }
+                planeHost.Update();
+            } else if (e.Key == Key.C)
+            {
+                copyFigures.Clear();
+                for (int i = 0; i < GlobalVars.Figures.Count; i++)
+                {
+                    if (GlobalVars.Figures[i].Selected)
+                    {
+                        copyFigures.Add(GlobalVars.Figures[i]);
+                    }
+                }
+            }
+            else if (e.Key == Key.V)
+            {
+                var center = new Point(0, 0);
+                int length = 0;
+
+                foreach (var figure in copyFigures)
+                {
+                    for (int i = 0; i < figure.points.Count; i++)
+                        center = center + new Vector(figure.points[i].X, figure.points[i].Y);
+                    length += figure.points.Count;
+                }
+                center = new Point(center.X / length, center.Y / length);
+
+                var mousePosition = Mouse.GetPosition(Canvas);
+
+                foreach (var figure in copyFigures)
+                {
+                    dynamic newFigure = figure.Clone();
+
+                    for (int i = 0; i < figure.points.Count; i++)
+                        newFigure.points[i] += (mousePosition - center);
+
+                    GlobalVars.Figures.Add(newFigure);
+                }
+
+                planeHost.Update();
+            }
         }
     }
 }

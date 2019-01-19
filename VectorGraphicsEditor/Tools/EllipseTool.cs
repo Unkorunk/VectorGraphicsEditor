@@ -24,6 +24,12 @@ namespace VectorGraphicsEditor.Tools
 
             GlobalVars.Figures[GlobalVars.Figures.Count - 1].SetPoint(0, new Point(Math.Min(a.X, b.X), Math.Min(a.Y, b.Y)));
             GlobalVars.Figures[GlobalVars.Figures.Count - 1].SetPoint(1, new Point(Math.Max(a.X, b.X), Math.Max(a.Y, b.Y)));
+
+            a = GlobalVars.Figures[GlobalVars.Figures.Count - 1].GetPoint(0);
+            b = GlobalVars.Figures[GlobalVars.Figures.Count - 1].GetPoint(1);
+
+            var size = Point.Subtract(b, a);
+            GlobalVars.Figures[GlobalVars.Figures.Count - 1].SetPoint(1, a + size);
         }
 
         public override void MouseMove(Point mousePosition)

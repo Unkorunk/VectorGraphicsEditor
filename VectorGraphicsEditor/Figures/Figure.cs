@@ -15,7 +15,7 @@ namespace VectorGraphicsEditor.Figures
     [XmlInclude(typeof(VectorGraphicsEditor.Figures.MyPen))]
     [XmlInclude(typeof(Rectangle))]
     [Serializable]
-    public class Figure
+    public class Figure : ICloneable
     {
         public Color colorBrush;
 
@@ -171,6 +171,11 @@ namespace VectorGraphicsEditor.Figures
             this.pen = pen;
         }
 
+        public virtual string GetSVG()
+        {
+            return string.Empty;
+        }
+
         public void AddPoint(Point point)
         {
             points.Add(point);
@@ -194,6 +199,19 @@ namespace VectorGraphicsEditor.Figures
         public virtual void Draw(DrawingContext drawingContext)
         {
 
+        }
+
+        public virtual object Clone()
+        {
+            Line figure = new Line(this.pen);
+
+            figure.points = new List<Point>(points);
+            figure._typeBrush = this._typeBrush;
+            figure._typeLine = this._typeLine;
+            figure.Thickness = this.Thickness;
+            figure.colorBrush = this.colorBrush;
+
+            return figure;
         }
     }
 }
